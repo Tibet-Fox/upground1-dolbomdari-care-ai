@@ -58,8 +58,10 @@ function Header() {
             onClick={() => {
               localStorage.removeItem('token');
               localStorage.removeItem('user');
+              localStorage.removeItem('access_token');
+              localStorage.removeItem('refresh_token');
               window.dispatchEvent(new CustomEvent('loginStatusChanged'));
-              navigate('/login');
+              navigate('/');
             }}
             className="text-gray-600 hover:text-red-600 transition-colors text-sm"
           >

@@ -3,10 +3,15 @@ import { Link } from 'react-router-dom';
 
 function LoginHeader() {
   return (
-    <header className="flex items-center justify-between px-6 sm:px-8 lg:px-10 py-4 bg-white border-b border-gray-200">
-              <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="로고" className="w-20 h-15 sm:w-24 h-18 lg:w-28 h-21 object-contain" />
+    <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 w-full shadow-sm sticky top-0 z-50">
+      {/* 로고 - Dashboard Header와 동일한 크기 */}
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <span className="text-white font-bold text-lg">U</span>
         </div>
+        <span className="text-xl font-bold text-gray-800">돌봄다리</span>
+      </div>
+      
       <nav className="flex gap-4 sm:gap-6 text-sm text-gray-700 items-center">
         <a href="#" className="hover:text-blue-600 transition-colors">돌봄다리 소개</a>
         <a href="#" className="hover:text-blue-600 transition-colors flex items-center gap-1">

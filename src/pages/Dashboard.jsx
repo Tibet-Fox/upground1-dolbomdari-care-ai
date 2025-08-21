@@ -19,7 +19,12 @@ function Dashboard() {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isFaqPopupOpen, setIsFaqPopupOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 추가
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    // 초기 상태를 localStorage에서 확인 (하위 호환성)
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    const user = localStorage.getItem('user');
+    return !!(token && user);
+  });
 
   // 사이드바 토글 함수들
   const toggleLeftSidebar = () => {
@@ -33,24 +38,78 @@ function Dashboard() {
   // 로그인 상태 확인
   useEffect(() => {
     const checkLoginStatus = () => {
-      const token = localStorage.getItem('token');
-      const user = localStorage.getItem('user');
-      setIsLoggedIn(!!(token && user));
+      try {
+        const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+        const user = localStorage.getItem('user');
+        
+        // 토큰 유효성 검사 (간단한 형식 검사)
+        const isTokenValid = token && typeof token === 'string' && token.split('.').length === 3;
+        const isUserValid = user && user !== 'null' && user !== 'undefined';
+        
+        const isLoggedInStatus = !!(isTokenValid && isUserValid);
+        
+        console.log('로그인 상태 확인:', { 
+          token: !!token, 
+          tokenValid: isTokenValid,
+          user: !!user, 
+          userValid: isUserValid,
+          isLoggedIn: isLoggedInStatus 
+        });
+        
+        setIsLoggedIn(isLoggedInStatus);
+      } catch (error) {
+        console.error('로그인 상태 확인 오류:', error);
+        setIsLoggedIn(false);
+      }
     };
 
-    checkLoginStatus();
-    
     // 로그인 상태 변경 감지
     const handleLoginStatusChange = () => {
+      console.log('로그인 상태 변경 이벤트 수신');
       checkLoginStatus();
     };
 
+    // storage 이벤트 리스너 (다른 탭에서 로그인/로그아웃 시)
     window.addEventListener('storage', handleLoginStatusChange);
+    
+    // 커스텀 이벤트 리스너 (같은 탭에서 로그인/로그아웃 시)
     window.addEventListener('loginStatusChanged', handleLoginStatusChange);
+    
+    // 페이지 포커스 시 로그인 상태 재확인
+    const handleFocus = () => {
+      console.log('페이지 포커스 - 로그인 상태 재확인');
+      checkLoginStatus();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    // localStorage 변경 감지를 위한 MutationObserver 대안
+    const originalSetItem = localStorage.setItem;
+    const originalRemoveItem = localStorage.removeItem;
+    
+    localStorage.setItem = function(key, value) {
+      originalSetItem.apply(this, arguments);
+      if (key === 'token' || key === 'access_token' || key === 'user') {
+        console.log('localStorage 변경 감지:', key);
+        setTimeout(checkLoginStatus, 100);
+      }
+    };
+    
+    localStorage.removeItem = function(key) {
+      originalRemoveItem.apply(this, arguments);
+      if (key === 'token' || key === 'access_token' || key === 'user') {
+        console.log('localStorage 삭제 감지:', key);
+        setTimeout(checkLoginStatus, 100);
+      }
+    };
 
     return () => {
       window.removeEventListener('storage', handleLoginStatusChange);
       window.removeEventListener('loginStatusChanged', handleLoginStatusChange);
+      window.removeEventListener('focus', handleFocus);
+      
+      // 원래 함수 복원
+      localStorage.setItem = originalSetItem;
+      localStorage.removeItem = originalRemoveItem;
     };
   }, []);
 
@@ -114,8 +173,31 @@ function Dashboard() {
       
       let errorMessage = "죄송합니다. 일시적인 오류가 발생했습니다. 다시 시도해주세요.";
       
-      if (error.message && error.message.includes('로그인이 필요합니다')) {
-        errorMessage = "로그인이 필요합니다. 다시 로그인해주세요.";
+      // 오류 메시지에 따른 처리
+      if (error.message) {
+        if (error.message.includes('로그인이 필요합니다')) {
+          errorMessage = "로그인이 필요합니다. 다시 로그인해주세요.";
+          
+          // 토큰 만료 시 로그아웃 처리
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          
+          // 로그인 상태 업데이트
+          setIsLoggedIn(false);
+          
+          // 3초 후 루트 페이지로 리다이렉트
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 3000);
+        } else if (error.message.includes('네트워크 오류')) {
+          errorMessage = "서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.";
+        } else if (error.message.includes('요청 데이터 형식')) {
+          errorMessage = "요청 데이터 형식이 올바르지 않습니다. 다시 시도해주세요.";
+        } else {
+          errorMessage = error.message;
+        }
       }
       
       const errorBotMessage = {

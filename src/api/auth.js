@@ -72,9 +72,15 @@ export const logoutUser = async () => {
   } catch (error) {
     console.error('Logout error:', error);
   } finally {
-    // 로컬 스토리지에서 토큰 제거
+    // 로컬 스토리지에서 모든 토큰과 사용자 정보 제거
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('current_conversation_id');
+    
+    // 로그인 상태 변경 이벤트 발생
+    window.dispatchEvent(new CustomEvent('loginStatusChanged'));
   }
 };
 

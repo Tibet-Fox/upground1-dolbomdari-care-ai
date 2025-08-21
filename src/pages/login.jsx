@@ -29,8 +29,22 @@ function Login() {
       
       // 로그인 성공 시 localStorage에 토큰과 사용자 정보 저장
       if (response.token) {
+        // access_token과 token 모두 저장 (하위 호환성)
+        localStorage.setItem('access_token', response.token);
         localStorage.setItem('token', response.token);
+        
+        // 리프레시 토큰이 있다면 저장
+        if (response.refresh_token) {
+          localStorage.setItem('refresh_token', response.refresh_token);
+        }
+        
         localStorage.setItem('user', JSON.stringify(response.user || { email }));
+        
+        console.log('토큰 저장 완료:', {
+          access_token: !!response.token,
+          refresh_token: !!response.refresh_token,
+          user: !!response.user
+        });
         
         // 로그인 상태 변경 이벤트 발생
         window.dispatchEvent(new CustomEvent('loginStatusChanged'));
