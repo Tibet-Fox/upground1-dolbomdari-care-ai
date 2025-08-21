@@ -19,6 +19,40 @@ function Dashboard() {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isFaqPopupOpen, setIsFaqPopupOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 추가
+
+  // 사이드바 토글 함수들
+  const toggleLeftSidebar = () => {
+    setIsLeftSidebarOpen(!isLeftSidebarOpen);
+  };
+
+  const toggleRightSidebar = () => {
+    setIsRightSidebarOpen(!isRightSidebarOpen);
+  };
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+      setIsLoggedIn(!!(token && user));
+    };
+
+    checkLoginStatus();
+    
+    // 로그인 상태 변경 감지
+    const handleLoginStatusChange = () => {
+      checkLoginStatus();
+    };
+
+    window.addEventListener('storage', handleLoginStatusChange);
+    window.addEventListener('loginStatusChanged', handleLoginStatusChange);
+
+    return () => {
+      window.removeEventListener('storage', handleLoginStatusChange);
+      window.removeEventListener('loginStatusChanged', handleLoginStatusChange);
+    };
+  }, []);
 
   // resetDashboard 이벤트 리스너 추가
   useEffect(() => {
@@ -449,10 +483,10 @@ function Dashboard() {
         <div className="flex flex-1">
           <LeftSidebar 
             isOpen={isLeftSidebarOpen} 
-            onToggle={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
+            onToggle={toggleLeftSidebar}
           />
           
-          <div className={`flex-1 transition-all duration-300 ${isLeftSidebarOpen ? 'ml-16' : 'ml-0'}`}>
+          <div className="flex-1">
             <div className="max-w-6xl mx-auto p-8">
               {/* 메인 제목 */}
               <div className="text-center mb-12">
@@ -491,7 +525,7 @@ function Dashboard() {
                     돌봄이가 빠르게 답해드릴게요!
                   </div>
                   <div className="text-sm text-gray-600 mb-8">
-                    *비회원 이용 가능
+                    {isLoggedIn ? '*로그인 완료 - 채팅 이용 가능' : '*비회원 이용 가능'}
                   </div>
 
                   {/* 프리셋 질문 버튼들 */}
@@ -518,18 +552,45 @@ function Dashboard() {
                   </div>
 
                   {/* 채팅 입력 영역 */}
-                  <div className="bg-gray-100 rounded-lg p-4 border border-gray-300">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-500 text-sm">
-                        채팅은 로그인 후 이용하실 수 있습니다.
-                      </span>
-                      <button className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                        </svg>
-                      </button>
+                  {isLoggedIn ? (
+                    <div className="bg-white rounded-lg border border-gray-300 p-4">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="text"
+                          value={inputText}
+                          onChange={(e) => setInputText(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                          placeholder="무엇이든 궁금한 점이 있다면 편하게 말씀해주세요."
+                          className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400"
+                        />
+                        <button
+                          onClick={handleSendMessage}
+                          disabled={!inputText.trim() || isLoading}
+                          className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="bg-gray-100 rounded-lg p-4 border border-gray-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-500 text-sm">
+                          채팅은 로그인 후 이용하실 수 있습니다.
+                        </span>
+                        <button 
+                          onClick={() => navigate('/login')}
+                          className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -537,7 +598,7 @@ function Dashboard() {
           
           <RightSidebar 
             isOpen={isRightSidebarOpen} 
-            onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
+            onToggle={toggleRightSidebar}
             onFaqClick={() => setIsFaqPopupOpen(true)}
           />
         </div>
@@ -557,10 +618,10 @@ function Dashboard() {
       <div className="flex flex-1">
         <LeftSidebar 
           isOpen={isLeftSidebarOpen} 
-          onToggle={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
+          onToggle={toggleLeftSidebar}
         />
         
-        <div className={`flex-1 transition-all duration-300 ${isLeftSidebarOpen ? 'ml-64' : 'ml-0'}`}>
+        <div className="flex-1">
           <div className="max-w-4xl mx-auto p-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
               <div className="p-4 border-b border-gray-200">
@@ -635,7 +696,7 @@ function Dashboard() {
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputText.trim() || isLoading}
-                  className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -648,7 +709,7 @@ function Dashboard() {
         
         <RightSidebar 
           isOpen={isRightSidebarOpen} 
-          onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
+          onToggle={toggleRightSidebar}
           onFaqClick={() => setIsFaqPopupOpen(true)}
         />
       </div>

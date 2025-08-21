@@ -26,6 +26,16 @@ function Login() {
     try {
       const response = await loginUser(email, password);
       console.log('로그인 성공:', response);
+      
+      // 로그인 성공 시 localStorage에 토큰과 사용자 정보 저장
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user || { email }));
+        
+        // 로그인 상태 변경 이벤트 발생
+        window.dispatchEvent(new CustomEvent('loginStatusChanged'));
+      }
+      
       navigate('/dashboard'); // 로그인 성공 후 이동할 페이지
     } catch (error) {
       console.error('로그인 실패:', error);
