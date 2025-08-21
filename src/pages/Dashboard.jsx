@@ -588,11 +588,12 @@ function Dashboard() {
                     <img 
                       src="/chatcharacter.png" 
                       alt="돌봄이 AI 캐릭터" 
-                      className="w-48 h-48"
+                      className="w-48 h-48 object-contain"
                     />
+                    {/* Wi-Fi 신호 아이콘 */}
                     <div className="absolute -top-2 -right-2">
                       <svg className="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
                       </svg>
                     </div>
                   </div>
@@ -623,11 +624,13 @@ function Dashboard() {
                       <button
                         key={category.name}
                         onClick={() => handleQuestionClick(category.name)}
-                        className="bg-white border-2 border-blue-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all duration-200 text-left"
+                        className="bg-white border-2 border-blue-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all duration-200 text-center group h-24 flex flex-col justify-center items-center"
                       >
-                        <div className="flex items-center mb-2">
-                          <span className="text-xl mr-2">{category.icon}</span>
-                          <div className="font-medium text-blue-600">{category.name}</div>
+                        <div className="flex flex-col items-center space-y-2">
+                          <span className="text-2xl group-hover:scale-110 transition-transform">{category.icon}</span>
+                          <div className="font-medium text-blue-600 group-hover:text-blue-700 transition-colors text-sm leading-tight">
+                            {category.name}
+                          </div>
                         </div>
                       </button>
                     ))}
@@ -635,7 +638,7 @@ function Dashboard() {
 
                   {/* 채팅 입력 영역 */}
                   {isLoggedIn ? (
-                    <div className="bg-white rounded-lg border border-gray-300 p-4">
+                    <div className="bg-white rounded-lg border border-gray-300 p-4 shadow-sm">
                       <div className="flex items-center gap-3">
                         <input
                           type="text"
@@ -643,12 +646,12 @@ function Dashboard() {
                           onChange={(e) => setInputText(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                           placeholder="무엇이든 궁금한 점이 있다면 편하게 말씀해주세요."
-                          className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400"
+                          className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400 text-sm"
                         />
                         <button
                           onClick={handleSendMessage}
                           disabled={!inputText.trim() || isLoading}
-                          className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -664,7 +667,7 @@ function Dashboard() {
                         </span>
                         <button 
                           onClick={() => navigate('/login')}
-                          className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
+                          className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors shadow-sm"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />

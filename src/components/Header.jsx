@@ -41,7 +41,7 @@ function Header() {
         <a href="#" className="text-gray-600 hover:text-gray-800 transition-colors flex items-center gap-1 relative">
           <span>🔔</span>
           내 알림
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
             32
           </span>
         </a>
@@ -50,7 +50,7 @@ function Header() {
           마이페이지
         </a>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1 text-gray-600">
+          <div className="flex items-center gap-1 text-gray-600 text-sm">
             <span>🏢</span>
             <span>행복나눔재가복지센터 김사회 님</span>
           </div>

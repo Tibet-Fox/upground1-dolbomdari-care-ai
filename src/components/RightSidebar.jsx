@@ -8,7 +8,7 @@ function RightSidebar({ onFaqClick, isOpen, onToggle }) {
         <div className="p-4 border-b border-gray-200">
           <button 
             onClick={onToggle}
-            className="w-full bg-green-600 text-white py-3 px-2 rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+            className="w-full bg-blue-600 text-white py-3 px-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
           >
             📁
           </button>
@@ -45,7 +45,7 @@ function RightSidebar({ onFaqClick, isOpen, onToggle }) {
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-            <span className="mr-2 text-green-600">📁</span>
+            <span className="mr-2 text-blue-600">📁</span>
             돌봄다리 자료실
           </h3>
           <button 

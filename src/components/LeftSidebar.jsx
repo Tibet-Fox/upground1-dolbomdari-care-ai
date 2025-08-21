@@ -20,7 +20,13 @@ function LeftSidebar({
         {/* 접힌 상태 아이콘들 */}
         <div className="flex-1 p-4 space-y-2">
           <button className="w-full p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors">
-            💬
+            📄
+          </button>
+          <button className="w-full p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors">
+            ✏️
+          </button>
+          <button className="w-full p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors">
+            📋
           </button>
           <button className="w-full p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors">
             🔖
