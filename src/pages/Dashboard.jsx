@@ -19,12 +19,7 @@ function Dashboard() {
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isFaqPopupOpen, setIsFaqPopupOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    // 초기 상태를 localStorage에서 확인 (하위 호환성)
-    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-    const user = localStorage.getItem('user');
-    return !!(token && user);
-  });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // 사이드바 토글 함수들
   const toggleLeftSidebar = () => {
@@ -38,30 +33,20 @@ function Dashboard() {
   // 로그인 상태 확인
   useEffect(() => {
     const checkLoginStatus = () => {
-      try {
-        const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-        const user = localStorage.getItem('user');
-        
-        // 토큰 유효성 검사 (간단한 형식 검사)
-        const isTokenValid = token && typeof token === 'string' && token.split('.').length === 3;
-        const isUserValid = user && user !== 'null' && user !== 'undefined';
-        
-        const isLoggedInStatus = !!(isTokenValid && isUserValid);
-        
-        console.log('로그인 상태 확인:', { 
-          token: !!token, 
-          tokenValid: isTokenValid,
-          user: !!user, 
-          userValid: isUserValid,
-          isLoggedIn: isLoggedInStatus 
-        });
-        
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      const user = localStorage.getItem('user');
+      
+      // 토큰만 있으면 로그인된 것으로 간주 (사용자 정보는 선택사항)
+      const isLoggedInStatus = !!token;
+      
+      if (isLoggedIn !== isLoggedInStatus) {
+        console.log('로그인 상태 변경됨:', isLoggedIn, '→', isLoggedInStatus, { token: !!token, user: !!user });
         setIsLoggedIn(isLoggedInStatus);
-      } catch (error) {
-        console.error('로그인 상태 확인 오류:', error);
-        setIsLoggedIn(false);
       }
     };
+
+    // 초기 로그인 상태 확인
+    checkLoginStatus();
 
     // 로그인 상태 변경 감지
     const handleLoginStatusChange = () => {
@@ -69,49 +54,40 @@ function Dashboard() {
       checkLoginStatus();
     };
 
-    // storage 이벤트 리스너 (다른 탭에서 로그인/로그아웃 시)
-    window.addEventListener('storage', handleLoginStatusChange);
-    
     // 커스텀 이벤트 리스너 (같은 탭에서 로그인/로그아웃 시)
     window.addEventListener('loginStatusChanged', handleLoginStatusChange);
     
     // 페이지 포커스 시 로그인 상태 재확인
     const handleFocus = () => {
-      console.log('페이지 포커스 - 로그인 상태 재확인');
       checkLoginStatus();
     };
     window.addEventListener('focus', handleFocus);
 
-    // localStorage 변경 감지를 위한 MutationObserver 대안
-    const originalSetItem = localStorage.setItem;
-    const originalRemoveItem = localStorage.removeItem;
-    
-    localStorage.setItem = function(key, value) {
-      originalSetItem.apply(this, arguments);
-      if (key === 'token' || key === 'access_token' || key === 'user') {
-        console.log('localStorage 변경 감지:', key);
-        setTimeout(checkLoginStatus, 100);
-      }
-    };
-    
-    localStorage.removeItem = function(key) {
-      originalRemoveItem.apply(this, arguments);
-      if (key === 'token' || key === 'access_token' || key === 'user') {
-        console.log('localStorage 삭제 감지:', key);
-        setTimeout(checkLoginStatus, 100);
-      }
-    };
-
     return () => {
-      window.removeEventListener('storage', handleLoginStatusChange);
       window.removeEventListener('loginStatusChanged', handleLoginStatusChange);
       window.removeEventListener('focus', handleFocus);
-      
-      // 원래 함수 복원
-      localStorage.setItem = originalSetItem;
-      localStorage.removeItem = originalRemoveItem;
     };
+  }, [isLoggedIn]);
+
+  // 컴포넌트가 마운트될 때마다 로그인 상태 확인
+  useEffect(() => {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    const isLoggedInStatus = !!token;
+    
+    console.log('컴포넌트 마운트 시 로그인 상태 확인:', { 
+      token: !!token,
+      isLoggedIn: isLoggedInStatus 
+    });
+    
+    setIsLoggedIn(isLoggedInStatus);
   }, []);
+
+  // isLoggedIn 상태가 변경될 때마다 콘솔에 출력 (개발용)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('isLoggedIn 상태 변경됨:', isLoggedIn);
+    }
+  }, [isLoggedIn]);
 
   // resetDashboard 이벤트 리스너 추가
   useEffect(() => {
@@ -137,6 +113,10 @@ function Dashboard() {
   // 메시지 전송 처리 함수
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
+
+    // 채팅 모드로 전환
+    setIsChatMode(true);
+    setIsChatHistoryOpen(false);
 
     const userMessage = {
       id: Date.now(),
@@ -218,6 +198,9 @@ function Dashboard() {
     setIsChatMode(true);
     setIsChatHistoryOpen(false);
     
+    // 기존 메시지 초기화 - 새로운 대화 시작
+    setMessages([]);
+    
     const userMessage = {
       id: Date.now(),
       text: category,
@@ -225,7 +208,7 @@ function Dashboard() {
       timestamp: new Date().toLocaleTimeString()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages([userMessage]);
     setIsLoading(true);
 
     try {
@@ -600,7 +583,7 @@ function Dashboard() {
                 </div>
 
                 {/* 콘텐츠 영역 */}
-                <div className="flex-1 max-w-2xl">
+                <div className="flex-1 max-w-4xl">
                   <div className="text-blue-600 text-lg mb-4">
                     아래 선택지 중에서 궁금한 걸 골라보세요.
                   </div>
@@ -637,45 +620,49 @@ function Dashboard() {
                   </div>
 
                   {/* 채팅 입력 영역 */}
-                  {isLoggedIn ? (
-                    <div className="bg-white rounded-lg border border-gray-300 p-4 shadow-sm">
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="text"
-                          value={inputText}
-                          onChange={(e) => setInputText(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                          placeholder="무엇이든 궁금한 점이 있다면 편하게 말씀해주세요."
-                          className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400 text-sm"
-                        />
-                        <button
-                          onClick={handleSendMessage}
-                          disabled={!inputText.trim() || isLoading}
-                          className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                          </svg>
-                        </button>
-                      </div>
+                  <div className="bg-white rounded-lg border border-gray-300 p-4 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="text"
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                        placeholder={isLoggedIn ? "무엇이든 궁금한 점이 있다면 편하게 말씀해주세요." : "채팅은 로그인 후 이용하실 수 있습니다."}
+                        className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400 text-sm"
+                        disabled={!isLoggedIn}
+                      />
+                      <button
+                        onClick={handleSendMessage}
+                        disabled={!inputText.trim() || isLoading || !isLoggedIn}
+                        className={`p-2 rounded-full transition-colors shadow-sm ${
+                          isLoggedIn 
+                            ? 'bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed' 
+                            : 'bg-gray-400 text-white cursor-not-allowed'
+                        }`}
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                      </button>
                     </div>
-                  ) : (
-                    <div className="bg-gray-100 rounded-lg p-4 border border-gray-300">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-500 text-sm">
-                          채팅은 로그인 후 이용하실 수 있습니다.
-                        </span>
-                        <button 
-                          onClick={() => navigate('/login')}
-                          className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors shadow-sm"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  </div>
+                  
+                  {/* 디버깅용 로그인 상태 표시 */}
+                  <div className="mt-2 text-xs text-gray-400">
+                    로그인 상태: {isLoggedIn ? '로그인됨' : '로그인 안됨'} 
+                    (토큰: {localStorage.getItem('token') || localStorage.getItem('access_token') ? '있음' : '없음'})
+                    <br />
+                    <button 
+                      onClick={() => {
+                        const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+                        console.log('수동 로그인 상태 확인:', { token: !!token });
+                        setIsLoggedIn(!!token);
+                      }}
+                      className="text-blue-500 underline"
+                    >
+                      수동으로 로그인 상태 확인
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -707,11 +694,53 @@ function Dashboard() {
         />
         
         <div className="flex-1">
-          <div className="max-w-4xl mx-auto p-6">
+          <div className="max-w-6xl mx-auto p-6">
+            {/* 빠른 질문 섹션 */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4 p-4">
+              <div className="flex items-center mb-3">
+                <span className="text-lg mr-2">❓</span>
+                <h3 className="text-lg font-semibold text-gray-800">빠른 질문</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { name: '요양보호사 입·퇴사', icon: '👤' },
+                  { name: '급여 계산', icon: '💰' },
+                  { name: '제공계획서 작성', icon: '📝' },
+                  { name: '2025 고시 변경', icon: '📜' },
+                  { name: '상담일지 작성', icon: '💬' },
+                  { name: 'AI 상담 사용법', icon: '💡' },
+                  { name: 'AI 챗봇의 응답 오류 및 피드백', icon: '🤖' }
+                ].map((category) => (
+                  <button
+                    key={category.name}
+                    onClick={() => handleQuestionClick(category.name)}
+                    className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm hover:bg-blue-100 transition-colors flex items-center gap-1"
+                  >
+                    <span>{category.icon}</span>
+                    <span>{category.name}</span>
+                  </button>
+                ))}
+                <button className="bg-gray-50 text-gray-600 px-3 py-1 rounded-full text-sm hover:bg-gray-100 transition-colors">
+                  더보기
+                </button>
+              </div>
+            </div>
+
+            {/* 채팅 메시지 영역 */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
-              <div className="p-4 border-b border-gray-200">
+              <div className="p-3 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-800">돌봄이와의 대화</h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-semibold text-gray-800">돌봄이와의 대화</h2>
+                    <div className="text-xs text-gray-500">
+                      {new Date().toLocaleDateString('ko-KR', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        weekday: 'long' 
+                      })}
+                    </div>
+                  </div>
                   <button
                     onClick={() => setIsChatMode(false)}
                     className="text-gray-500 hover:text-gray-700"
@@ -721,46 +750,78 @@ function Dashboard() {
                     </svg>
                   </button>
                 </div>
+                
+                {/* 면책 조항 */}
+                <div className="text-xs text-gray-500 mt-2">
+                  * 돌봄다리 AI는 공단 기준에 기반해 안내하나, 일부 오류가 발생할 수 있습니다.
+                </div>
               </div>
               
-              <div className="h-96 overflow-y-auto p-4 space-y-4">
+              <div className="h-[500px] overflow-y-auto p-4 space-y-4">
                 {messages.map((message) => (
                   <div
                     key={message.id}
                     className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        message.sender === 'user'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {renderMessage(message)}
-                      
-                      {message.suggestions && message.sender === 'ai' && (
-                        <div className="mt-3 space-y-2">
-                          {message.suggestions.map((suggestion, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleSuggestionClick(suggestion)}
-                              className="block w-full text-left text-sm bg-white bg-opacity-20 hover:bg-opacity-30 rounded px-3 py-2 transition-colors"
-                            >
-                              {suggestion}
-                            </button>
-                          ))}
+                    <div className="flex flex-col">
+                      {message.sender === 'ai' && (
+                        <div className="flex items-center mb-1">
+                          <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-2">
+                            <span className="text-white text-xs">🤖</span>
+                          </div>
+                          <span className="text-sm text-gray-600">돌봄다리 AI</span>
                         </div>
                       )}
+                      <div
+                        className={`max-w-xs lg:max-w-lg xl:max-w-2xl px-4 py-2 rounded-lg ${
+                          message.sender === 'user'
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {renderMessage(message)}
+                        
+                        {message.suggestions && message.sender === 'ai' && (
+                          <div className="mt-3 space-y-2">
+                            {message.suggestions.map((suggestion, index) => (
+                              <button
+                                key={index}
+                                onClick={() => handleSuggestionClick(suggestion)}
+                                className="block w-full text-left text-sm bg-white bg-opacity-20 hover:bg-opacity-30 rounded px-3 py-2 transition-colors"
+                              >
+                                {suggestion}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className={`text-xs text-gray-500 mt-1 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                        {message.timestamp}
+                      </div>
                     </div>
                   </div>
                 ))}
                 
                 {isLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg">
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
-                        <span>답변을 준비하고 있습니다...</span>
+                    <div className="flex flex-col">
+                      <div className="flex items-center mb-1">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-2">
+                          <span className="text-white text-xs">🤖</span>
+                        </div>
+                        <span className="text-sm text-gray-600">돌봄다리 AI</span>
+                      </div>
+                      <div className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1 text-left">
+                        {new Date().toLocaleTimeString()}
                       </div>
                     </div>
                   </div>
