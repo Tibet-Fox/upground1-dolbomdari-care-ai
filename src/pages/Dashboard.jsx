@@ -443,75 +443,89 @@ function Dashboard() {
   // 메인 대시보드 화면
   if (!isChatMode) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white flex flex-col">
         <Header />
         
-        <div className="flex">
+        <div className="flex flex-1">
           <LeftSidebar 
             isOpen={isLeftSidebarOpen} 
             onToggle={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
-            chatHistory={chatHistory}
-            onChatSelect={(chatId) => {
-              setSelectedChatId(chatId);
-              setIsChatMode(true);
-            }}
           />
           
-          <div className={`flex-1 transition-all duration-300 ${isLeftSidebarOpen ? 'ml-64' : 'ml-0'}`}>
-            <div className="max-w-4xl mx-auto p-6">
+          <div className={`flex-1 transition-all duration-300 ${isLeftSidebarOpen ? 'ml-16' : 'ml-0'}`}>
+            <div className="max-w-6xl mx-auto p-8">
+              {/* 메인 제목 */}
               <div className="text-center mb-12">
-                <div className="mb-8">
-                  <img 
-                    src="/chatcharacter.png" 
-                    alt="돌봄이 캐릭터" 
-                    className="w-32 h-32 mx-auto mb-4"
-                  />
-                  <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                    안녕하세요! 돌봄이입니다 👋
-                  </h1>
-                  <p className="text-lg text-gray-600">
-                    요양보호 업무에 대해 궁금한 점이 있으시면 언제든지 물어보세요!
-                  </p>
+                <h1 className="text-4xl font-bold text-blue-600 mb-4">
+                  돌봄다리 AI 전문가의 24시간 상담 서비스
+                </h1>
+                <p className="text-lg text-gray-700">
+                  실무에 꼭 맞는 공단 기준 상담, 365일 24시간 답해드립니다.
+                </p>
+              </div>
+
+              {/* AI 캐릭터와 콘텐츠 영역 */}
+              <div className="flex items-start justify-center gap-12 mb-12">
+                {/* AI 캐릭터 */}
+                <div className="flex-shrink-0">
+                  <div className="relative">
+                    <img 
+                      src="/chatcharacter.png" 
+                      alt="돌봄이 AI 캐릭터" 
+                      className="w-48 h-48"
+                    />
+                    <div className="absolute -top-2 -right-2">
+                      <svg className="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                  {[
-                    '요양보호사 입·퇴사',
-                    '급여 계산',
-                    '제공계획서 작성',
-                    '2025 고시 변경',
-                    '상담일지 작성',
-                    'AI 상담 사용법'
-                  ].map((category) => (
-                    <button
-                      key={category}
-                      onClick={() => handleQuestionClick(category)}
-                      className="bg-white border-2 border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all duration-200 text-left"
-                    >
-                      <div className="font-medium text-gray-800 mb-1">{category}</div>
-                      <div className="text-sm text-gray-500">자세한 정보 보기</div>
-                    </button>
-                  ))}
-                </div>
+                {/* 콘텐츠 영역 */}
+                <div className="flex-1 max-w-2xl">
+                  <div className="text-blue-600 text-lg mb-4">
+                    아래 선택지 중에서 궁금한 걸 골라보세요.
+                  </div>
+                  <div className="text-blue-600 text-lg mb-2">
+                    돌봄이가 빠르게 답해드릴게요!
+                  </div>
+                  <div className="text-sm text-gray-600 mb-8">
+                    *비회원 이용 가능
+                  </div>
 
-                <div className="max-w-2xl mx-auto">
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="text"
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                        placeholder="무엇이든 궁금한 점이 있다면 편하게 말씀해주세요."
-                        className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400"
-                      />
+                  {/* 프리셋 질문 버튼들 */}
+                  <div className="grid grid-cols-3 gap-4 mb-8">
+                    {[
+                      { name: '요양보호사 입·퇴사', icon: '👤' },
+                      { name: '급여 계산', icon: '💰' },
+                      { name: '제공계획서 작성', icon: '📝' },
+                      { name: '2025 고시 변경', icon: '📜' },
+                      { name: '상담일지 작성', icon: '💬' },
+                      { name: 'AI 상담 사용법', icon: '💡' }
+                    ].map((category) => (
                       <button
-                        onClick={handleSendMessage}
-                        disabled={!inputText.trim() || isLoading}
-                        className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        key={category.name}
+                        onClick={() => handleQuestionClick(category.name)}
+                        className="bg-white border-2 border-blue-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all duration-200 text-left"
                       >
+                        <div className="flex items-center mb-2">
+                          <span className="text-xl mr-2">{category.icon}</span>
+                          <div className="font-medium text-blue-600">{category.name}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* 채팅 입력 영역 */}
+                  <div className="bg-gray-100 rounded-lg p-4 border border-gray-300">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500 text-sm">
+                        채팅은 로그인 후 이용하실 수 있습니다.
+                      </span>
+                      <button className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                         </svg>
                       </button>
                     </div>
@@ -537,18 +551,13 @@ function Dashboard() {
 
   // 채팅 화면
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
       
-      <div className="flex">
+      <div className="flex flex-1">
         <LeftSidebar 
           isOpen={isLeftSidebarOpen} 
           onToggle={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
-          chatHistory={chatHistory}
-          onChatSelect={(chatId) => {
-            setSelectedChatId(chatId);
-            setIsChatMode(true);
-          }}
         />
         
         <div className={`flex-1 transition-all duration-300 ${isLeftSidebarOpen ? 'ml-64' : 'ml-0'}`}>
