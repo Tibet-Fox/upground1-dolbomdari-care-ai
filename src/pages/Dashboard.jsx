@@ -554,11 +554,11 @@ function Dashboard() {
           <div className="flex-1">
             <div className="max-w-6xl mx-auto p-8">
               {/* 메인 제목 */}
-              <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold text-blue-600 mb-4">
+              <div className="text-center mb-12 flex flex-col items-center">
+                <h1 className="text-4xl font-bold text-blue-600 mb-4 text-center">
                   돌봄다리 AI 전문가의 24시간 상담 서비스
                 </h1>
-                <p className="text-lg text-gray-700">
+                <p className="text-lg text-gray-700 text-center max-w-2xl">
                   실무에 꼭 맞는 공단 기준 상담, 365일 24시간 답해드립니다.
                 </p>
               </div>
@@ -573,12 +573,6 @@ function Dashboard() {
                       alt="돌봄이 AI 캐릭터" 
                       className="w-48 h-48 object-contain"
                     />
-                    {/* Wi-Fi 신호 아이콘 */}
-                    <div className="absolute -top-2 -right-2">
-                      <svg className="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
-                      </svg>
-                    </div>
                   </div>
                 </div>
 
@@ -587,11 +581,8 @@ function Dashboard() {
                   <div className="text-blue-600 text-lg mb-4">
                     아래 선택지 중에서 궁금한 걸 골라보세요.
                   </div>
-                  <div className="text-blue-600 text-lg mb-2">
+                  <div className="text-blue-600 text-lg mb-8">
                     돌봄이가 빠르게 답해드릴게요!
-                  </div>
-                  <div className="text-sm text-gray-600 mb-8">
-                    {isLoggedIn ? '*로그인 완료 - 채팅 이용 가능' : '*비회원 이용 가능'}
                   </div>
 
                   {/* 프리셋 질문 버튼들 */}
@@ -611,7 +602,7 @@ function Dashboard() {
                       >
                         <div className="flex flex-col items-center space-y-2">
                           <span className="text-2xl group-hover:scale-110 transition-transform">{category.icon}</span>
-                          <div className="font-medium text-blue-600 group-hover:text-blue-700 transition-colors text-sm leading-tight">
+                          <div className="font-medium text-blue-600 group-hover:text-blue-700 transition-colors text-base leading-tight">
                             {category.name}
                           </div>
                         </div>
@@ -647,22 +638,7 @@ function Dashboard() {
                     </div>
                   </div>
                   
-                  {/* 디버깅용 로그인 상태 표시 */}
-                  <div className="mt-2 text-xs text-gray-400">
-                    로그인 상태: {isLoggedIn ? '로그인됨' : '로그인 안됨'} 
-                    (토큰: {localStorage.getItem('token') || localStorage.getItem('access_token') ? '있음' : '없음'})
-                    <br />
-                    <button 
-                      onClick={() => {
-                        const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-                        console.log('수동 로그인 상태 확인:', { token: !!token });
-                        setIsLoggedIn(!!token);
-                      }}
-                      className="text-blue-500 underline"
-                    >
-                      수동으로 로그인 상태 확인
-                    </button>
-                  </div>
+
                 </div>
               </div>
             </div>
