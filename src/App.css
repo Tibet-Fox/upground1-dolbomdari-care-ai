@@ -40,3 +40,41 @@
 .read-the-docs {
   color: #888;
 }
+
+.container {
+  display: flex;
+  align-items: center; /* 세로 가운데 정렬 */
+  gap: 16px; /* 이미지 간 간격 */
+}
+
+.image1 {
+  width: 192px; /* w-48 */
+}
+
+.image2 {
+  width: 96px; /* w-24 */
+}
+.speech {
+  width: 40px; /* w-24 */
+}
+
+.speech-bubble {
+  position: relative;
+  background: #00aabb;
+  border-radius: .4em;
+}
+ 
+.speech-bubble:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: 20px solid transparent;
+  border-top-color: #00aabb;
+  border-bottom: 0;
+  border-left: 0;
+  margin-left: -10px;
+  margin-bottom: -20px;
+}

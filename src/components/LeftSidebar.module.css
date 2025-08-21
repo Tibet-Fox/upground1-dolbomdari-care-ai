@@ -1,0 +1,124 @@
+/* LeftSidebar.module.css */
+.sidebar {
+  background: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s ease;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sidebarClosed {
+  width: 64px;
+}
+
+.sidebarOpen {
+  width: 256px;
+}
+
+.sidebarContent {
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.sidebarTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.toggleButton {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.toggleButton:hover {
+  background: #e9ecef;
+}
+
+.sidebarMenu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.menuItem:hover {
+  background: #f8f9fa;
+  color: #007bff;
+}
+
+.menuItem.active {
+  background: #e7f3ff;
+  color: #007bff;
+  font-weight: 500;
+}
+
+.menuIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuText {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 닫힌 상태에서의 스타일 */
+.sidebarClosed .sidebarContent {
+  padding: 16px 8px;
+}
+
+.sidebarClosed .sidebarHeader {
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.sidebarClosed .sidebarTitle,
+.sidebarClosed .menuText {
+  display: none;
+}
+
+.sidebarClosed .menuItem {
+  justify-content: center;
+  padding: 12px 8px;
+}
+
+.sidebarClosed .menuIcon {
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+}

@@ -1,0 +1,334 @@
+/* Dashboard.module.css */
+.dashboardContainer {
+  display: flex;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  transition: padding 0.3s ease;
+}
+
+.mainContentFullScreen {
+  padding: 40px;
+}
+
+.chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.messageList {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputArea {
+  padding: 20px;
+  border-top: 1px solid #e9ecef;
+  background: white;
+}
+
+.inputContainer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.textInput {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 25px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.textInput:focus {
+  border-color: #007bff;
+}
+
+.sendButton {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.sendButton:hover {
+  background: #0056b3;
+}
+
+.presetQuestions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.presetButton {
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  background: white;
+  color: #495057;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.presetButton:hover {
+  border-color: #007bff;
+  background: #f8f9ff;
+  color: #007bff;
+}
+
+/* 메시지 스타일 */
+.userMessage {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.userBubble {
+  background: #007bff;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 18px 18px 4px 18px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.aiMessage {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.aiAvatar {
+  width: 48px;
+  height: 48px;
+  background: #007bff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  position: relative;
+}
+
+.aiAvatar::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
+  background: #28a745;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.aiBubble {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 18px 18px 18px 4px;
+  padding: 16px 20px;
+  max-width: 70%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.aiName {
+  font-weight: bold;
+  color: #495057;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.aiText {
+  color: #212529;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* 구조화된 답변 스타일 */
+.summaryBox {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 16px 0;
+}
+
+.summaryTitle {
+  color: #856404;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.summaryText {
+  color: #856404;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.explanationSection {
+  margin: 16px 0;
+}
+
+.explanationTitle {
+  color: #6c757d;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.explanationText {
+  color: #495057;
+  line-height: 1.7;
+  white-space: pre-line;
+  font-size: 15px;
+}
+
+.referencesSection {
+  margin: 16px 0;
+}
+
+.referencesTitle {
+  color: #28a745;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.referenceLink {
+  display: block;
+  padding: 12px;
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.referenceLink:hover {
+  background: #c3e6cb;
+  color: #0f5132;
+}
+
+.suggestionsSection {
+  margin-top: 20px;
+}
+
+.suggestionsTitle {
+  color: #dc3545;
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suggestionButton {
+  width: 100%;
+  text-align: left;
+  padding: 16px;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  color: #495057;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.suggestionButton:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+/* 채팅 히스토리 스타일 */
+.chatHistory {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.chatHistoryItem {
+  padding: 12px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.chatHistoryItem:hover {
+  border-color: #007bff;
+  background: #f8f9ff;
+}
+
+.chatHistoryItem.active {
+  border-color: #007bff;
+  background: #e7f3ff;
+}
+
+/* 로딩 스타일 */
+.loadingMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.loadingSpinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
