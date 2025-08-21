@@ -2,7 +2,8 @@ import React from 'react';
 
 function LeftSidebar({ 
   isOpen,
-  onToggle
+  onToggle,
+  onNewChat
 }) {
   if (!isOpen) {
     return (
@@ -50,7 +51,10 @@ function LeftSidebar({
       {/* 새 채팅 버튼 */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <button className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+          <button 
+            onClick={onNewChat}
+            className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
             새 채팅
           </button>
           <button 

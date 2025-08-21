@@ -736,6 +736,7 @@ function Dashboard() {
         <LeftSidebar 
           isOpen={isLeftSidebarOpen} 
           onToggle={toggleLeftSidebar}
+          onNewChat={() => setIsChatMode(false)}
         />
         
         <div className="flex-1">
