@@ -132,12 +132,18 @@ function Dashboard() {
     try {
       const response = await askChatbot(inputText);
       
+      console.log('Dashboard에서 받은 응답:', response);
+      
       let botMessageText;
       if (typeof response.bot_message === 'object' && response.bot_message.greeting) {
         botMessageText = response.bot_message;
+      } else if (typeof response.bot_message === 'string') {
+        botMessageText = response.bot_message;
       } else {
-        botMessageText = response.bot_message || response.message || "죄송합니다. 응답을 생성하는 중에 오류가 발생했습니다.";
+        botMessageText = "죄송합니다. 응답을 생성하는 중에 오류가 발생했습니다.";
       }
+      
+      console.log('최종 botMessageText:', botMessageText);
 
       const botMessage = {
         id: Date.now() + 1,
@@ -171,6 +177,16 @@ function Dashboard() {
           setTimeout(() => {
             window.location.href = "/";
           }, 3000);
+        } else if (error.message.includes('대화 접근 권한이 없습니다')) {
+          errorMessage = "대화 접근 권한이 없습니다. 새 대화를 시작합니다.";
+          
+          // 대화 ID 초기화
+          localStorage.removeItem('current_conversation_id');
+          
+          // 2초 후 다시 시도
+          setTimeout(() => {
+            handleSendMessage();
+          }, 2000);
         } else if (error.message.includes('네트워크 오류')) {
           errorMessage = "서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.";
         } else if (error.message.includes('요청 데이터 형식')) {

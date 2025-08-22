@@ -5,8 +5,13 @@ export const createConversation = async () => {
   try {
     console.log('새 대화 생성 요청');
     
-    // 빈 body로 요청 (서버가 요구하는 필드가 없는 경우)
-    const response = await instance.post('/chat/conversations', {}, {
+    // API 명세서에 따른 대화 생성 요청
+    const requestData = {
+      title: `대화 ${new Date().toLocaleString('ko-KR')}`,
+      created_at: new Date().toISOString()
+    };
+    
+    const response = await instance.post('/chat/conversations', requestData, {
       withCredentials: false
     });
     console.log('대화 생성 성공:', response.data);
@@ -20,6 +25,13 @@ export const createConversation = async () => {
     if (error.response?.status === 401) {
       console.log('401 오류 - 인증이 필요합니다.');
       throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+    }
+    
+    // 403 오류 (접근 권한 없음) 처리
+    if (error.response?.status === 403) {
+      console.log('403 오류 - 대화 생성 권한이 없습니다.');
+      console.log('서버 응답:', error.response.data);
+      throw new Error('대화 생성 권한이 없습니다. 다시 로그인해주세요.');
     }
     
     // 422 오류 (유효성 검사 실패) 처리
@@ -55,18 +67,27 @@ export const sendMessageWithAI = async (conversationId, userMessage) => {
       throw new Error('대화 ID와 메시지가 필요합니다.');
     }
     
-    // 요청 데이터를 올바른 형식으로 변환 (camelCase, 올바른 타입)
+    // API 명세서에 따른 요청 데이터 형식 (content 필드 사용)
     const requestData = {
-      conversationId: Number(conversationId), // number 타입으로 변환
-      message: String(userMessage), // string 타입으로 확실히 변환
-      sender: 'user', // sender 필드 추가
-      timestamp: new Date().toISOString() // timestamp 필드 추가
+      conversation_id: Number(conversationId), // snake_case로 변경
+      content: String(userMessage).trim(), // content 필드로 변경
+      sender: 'user', // sender 필드
+      timestamp: new Date().toISOString() // ISO 형식 타임스탬프
     };
+    
+    // 요청 데이터 검증
+    if (!requestData.conversation_id || requestData.conversation_id <= 0) {
+      throw new Error('유효하지 않은 대화 ID입니다.');
+    }
+    
+    if (!requestData.content || requestData.content.length === 0) {
+      throw new Error('메시지 내용이 없습니다.');
+    }
     
     console.log('요청 데이터:', requestData);
     console.log('Request Payload 검증:');
-    console.log('- conversationId 타입:', typeof requestData.conversationId, '값:', requestData.conversationId);
-    console.log('- message 타입:', typeof requestData.message, '값:', requestData.message);
+    console.log('- conversation_id 타입:', typeof requestData.conversation_id, '값:', requestData.conversation_id);
+    console.log('- content 타입:', typeof requestData.content, '값:', requestData.content);
     console.log('- sender 타입:', typeof requestData.sender, '값:', requestData.sender);
     console.log('- timestamp 타입:', typeof requestData.timestamp, '값:', requestData.timestamp);
     
@@ -85,6 +106,16 @@ export const sendMessageWithAI = async (conversationId, userMessage) => {
     if (error.response?.status === 401) {
       console.log('401 오류 - 인증이 필요합니다.');
       throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+    }
+    
+    // 403 오류 (접근 권한 없음) 처리
+    if (error.response?.status === 403) {
+      console.log('403 오류 - 해당 대화에 접근할 수 없습니다.');
+      console.log('서버 응답:', error.response.data);
+      
+      // 대화 ID 초기화하고 새 대화 생성 시도
+      localStorage.removeItem('current_conversation_id');
+      throw new Error('대화 접근 권한이 없습니다. 새 대화를 시작합니다.');
     }
     
     // 422 오류 (유효성 검사 실패) 처리
@@ -154,30 +185,35 @@ export const askChatbot = async (userMessage) => {
 
     console.log('챗봇 질문:', userMessage);
     
+    // 인증 상태 확인
+    const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+    if (!token) {
+      throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+    }
+    
     // 1. 대화 생성 또는 기존 대화 사용
     let conversationId = localStorage.getItem('current_conversation_id');
     console.log('기존 대화 ID:', conversationId);
     
-    if (!conversationId) {
-      try {
-        console.log('새 대화를 생성합니다.');
-        const conversation = await createConversation();
-        console.log('대화 생성 응답:', conversation);
-        
-        conversationId = conversation.id || conversation.conversation_id || conversation.conversationId;
-        console.log('추출된 대화 ID:', conversationId);
-        
-        if (conversationId) {
-          localStorage.setItem('current_conversation_id', conversationId);
-          console.log('새 대화 생성 완료, ID:', conversationId);
-        } else {
-          console.error('대화 응답에서 ID를 찾을 수 없습니다:', conversation);
-          throw new Error('대화 ID를 받지 못했습니다.');
-        }
-      } catch (error) {
-        console.error('대화 생성 실패:', error);
-        throw new Error('대화를 시작할 수 없습니다. 잠시 후 다시 시도해주세요.');
+    // 기존 대화 ID가 있더라도 새로 생성 (접근 권한 문제 해결)
+    try {
+      console.log('새 대화를 생성합니다.');
+      const conversation = await createConversation();
+      console.log('대화 생성 응답:', conversation);
+      
+      conversationId = conversation.id || conversation.conversation_id || conversation.conversationId || conversation.data?.id;
+      console.log('추출된 대화 ID:', conversationId);
+      
+      if (conversationId) {
+        localStorage.setItem('current_conversation_id', conversationId);
+        console.log('새 대화 생성 완료, ID:', conversationId);
+      } else {
+        console.error('대화 응답에서 ID를 찾을 수 없습니다:', conversation);
+        throw new Error('대화 ID를 받지 못했습니다.');
       }
+    } catch (error) {
+      console.error('대화 생성 실패:', error);
+      throw new Error('대화를 시작할 수 없습니다. 잠시 후 다시 시도해주세요.');
     }
     
     // 2. 명세에 따라 sendMessageWithAI 사용 (사용자 메시지 → AI 응답 저장)
@@ -186,11 +222,21 @@ export const askChatbot = async (userMessage) => {
     const response = await sendMessageWithAI(conversationId, userMessage);
     console.log('AI 응답 수신:', response);
     
-    // 3. 응답 데이터 구조화
+    // 3. 응답 데이터 구조화 (API 명세서에 따른 필드명 사용)
+    console.log('원본 응답 데이터:', response);
+    
+    // 응답에서 content 필드 추출
+    const botMessage = response.content || response.bot_message || response.ai_message || response.message || response.data?.message || response.data?.content;
+    
+    console.log('추출된 bot_message:', botMessage);
+    
     const responseData = {
-      bot_message: response.bot_message || response.message || response.ai_response || "응답을 받지 못했습니다.",
-      suggestions: response.suggestions || null
+      bot_message: botMessage || "응답을 받지 못했습니다.",
+      suggestions: response.suggestions || response.data?.suggestions || null,
+      conversation_id: response.conversation_id || response.data?.conversation_id || conversationId
     };
+    
+    console.log('구조화된 응답 데이터:', responseData);
     
     return responseData;
   } catch (error) {
