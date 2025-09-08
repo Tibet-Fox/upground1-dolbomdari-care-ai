@@ -1025,10 +1025,10 @@ function Dashboard() {
                       <button
                         key={category.name}
                         onClick={() => handleQuestionClick(category.name)}
-                        className={`bg-white border-2 rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-200 text-center group h-16 flex flex-col justify-center items-center focus:outline-none ${
+                        className={`bg-gradient-to-b from-white to-gray-100 border-2 rounded-xl p-4 shadow-xl hover:shadow-2xl transition-all duration-200 text-center group h-16 flex flex-col justify-center items-center focus:outline-none transform hover:-translate-y-1 active:translate-y-0 ${
                           selectedCategory === category.name 
-                            ? 'border-blue-400 shadow-xl focus:border-blue-400' 
-                            : 'border-gray-200 hover:border-blue-400 focus:border-blue-400'
+                            ? 'border-blue-400 bg-gradient-to-b from-blue-50 to-blue-100 shadow-2xl focus:border-blue-400' 
+                            : 'border-blue-400 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400'
                         }`}
                       >
                         <div className="flex items-center space-x-2">
@@ -1123,17 +1123,17 @@ function Dashboard() {
                   <button
                     key={category.name}
                     onClick={() => handleQuestionClick(category.name)}
-                    className={`bg-white border-2 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 focus:outline-none ${
+                    className={`bg-gradient-to-b from-white to-gray-100 border-2 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 ${
                       selectedCategory === category.name 
-                        ? 'border-blue-400 shadow-lg focus:border-blue-400' 
-                        : 'border-gray-200 hover:border-gray-400 focus:border-gray-400'
+                        ? 'border-blue-400 bg-gradient-to-b from-blue-50 to-blue-100 shadow-xl focus:border-blue-400' 
+                        : 'border-blue-400 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400'
                     }`}
                   >
                     <span>{category.icon}</span>
                     <span>{category.name}</span>
                   </button>
                 ))}
-                <button className="bg-white border-2 border-gray-200 text-gray-600 font-bold px-4 py-2 rounded-xl text-sm shadow-md hover:border-gray-400 hover:shadow-lg transition-all duration-200 focus:outline-none focus:border-gray-400">
+                <button className="bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-gray-600 font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 hover:shadow-xl transition-all duration-200 focus:outline-none focus:border-blue-400 transform hover:-translate-y-1 active:translate-y-0">
                   더보기
                 </button>
               </div>
