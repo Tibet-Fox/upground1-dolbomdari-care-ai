@@ -1,8 +1,38 @@
 // src/components/Header.jsx
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 function Header() {
   const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState(null);
+
+  // 사용자 정보 로드
+  useEffect(() => {
+    const loadUserInfo = () => {
+      try {
+        const user = localStorage.getItem('user');
+        if (user) {
+          const userData = JSON.parse(user);
+          setUserInfo(userData);
+        }
+      } catch (error) {
+        console.error('사용자 정보 로드 실패:', error);
+      }
+    };
+
+    loadUserInfo();
+
+    // 로그인 상태 변경 이벤트 리스너
+    const handleLoginStatusChange = () => {
+      loadUserInfo();
+    };
+
+    window.addEventListener('loginStatusChanged', handleLoginStatusChange);
+    
+    return () => {
+      window.removeEventListener('loginStatusChanged', handleLoginStatusChange);
+    };
+  }, []);
 
   const handleLogoClick = () => {
     console.log('로고 클릭됨!');
@@ -20,15 +50,12 @@ function Header() {
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 w-full shadow-sm sticky top-0 z-50">
       {/* 로고 */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center">
         <button 
           onClick={handleLogoClick}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0"
+          className="hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0"
         >
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">U</span>
-          </div>
-          <span className="text-xl font-bold text-gray-800">돌봄다리</span>
+          <img src="/logo.png" alt="로고" className="w-40 h-10" />
         </button>
       </div>
       
@@ -45,14 +72,26 @@ function Header() {
             32
           </span>
         </a>
-        <a href="#" className="text-gray-600 hover:text-gray-800 transition-colors flex items-center gap-1">
+        <button 
+          onClick={() => navigate('/mypage')}
+          className="text-gray-600 hover:text-gray-800 transition-colors flex items-center gap-1 bg-transparent border-none cursor-pointer"
+        >
           <span>👤</span>
           마이페이지
-        </a>
+        </button>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1 text-gray-600 text-sm">
             <span>🏢</span>
-            <span>행복나눔재가복지센터 김사회 님</span>
+            <span>
+              {userInfo ? (
+                <>
+                  {userInfo.organization || userInfo.center_name || '기관명'} 
+                  {userInfo.name && ` ${userInfo.name} 님`}
+                </>
+              ) : (
+                '사용자 정보 로딩 중...'
+              )}
+            </span>
           </div>
           <button 
             onClick={() => {
@@ -60,6 +99,7 @@ function Header() {
               localStorage.removeItem('user');
               localStorage.removeItem('access_token');
               localStorage.removeItem('refresh_token');
+              localStorage.removeItem('current_conversation_id');
               window.dispatchEvent(new CustomEvent('loginStatusChanged'));
               navigate('/');
             }}

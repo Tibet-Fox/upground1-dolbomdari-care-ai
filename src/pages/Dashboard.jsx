@@ -31,6 +31,32 @@ function Dashboard() {
     setIsRightSidebarOpen(!isRightSidebarOpen);
   };
 
+  // 채팅 내역 선택 함수
+  const handleSelectChat = async (chatId) => {
+    try {
+      console.log('채팅 선택:', chatId);
+      setSelectedChatId(chatId);
+      setIsChatMode(true);
+      setIsLoading(true);
+      
+      // 선택된 채팅의 메시지들을 불러오기
+      const { getConversationDetails } = await import('../api/chat');
+      const response = await getConversationDetails(chatId);
+      
+      console.log('채팅 상세 조회 성공:', response);
+      
+      // 메시지 데이터 처리
+      const messages = response.messages || response.data?.messages || [];
+      setMessages(messages);
+      
+    } catch (error) {
+      console.error('채팅 로드 실패:', error);
+      setMessages([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // 로그인 상태 확인
   useEffect(() => {
     const checkLoginStatus = () => {
@@ -852,7 +878,7 @@ function Dashboard() {
           
           {/* 상세 설명 */}
           <div className="text-gray-700 leading-relaxed text-sm">
-            {explanation.split('\n').map((line, index) => {
+            {explanation && typeof explanation === 'string' ? explanation.split('\n').map((line, index) => {
               if (line.includes('**')) {
                 // 볼드 텍스트 처리
                 const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-800">$1</strong>');
@@ -889,11 +915,11 @@ function Dashboard() {
                   </div>
                 );
               }
-            })}
+            }) : <div className="text-gray-500 text-sm">설명이 없습니다.</div>}
           </div>
           
           {/* 관련 자료 */}
-          {references && references.length > 0 && (
+          {references && Array.isArray(references) && references.length > 0 && (
             <div className="mt-4 p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-gray-500">📚</span>
@@ -902,7 +928,7 @@ function Dashboard() {
               <div className="space-y-2">
                 {references.map((ref, index) => (
                   <div 
-                    key={index} 
+                    key={`reference-${index}-${ref.title || index}`} 
                     className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 cursor-pointer transition-colors"
                     onClick={() => handlePdfDownload(ref)}
                   >
@@ -947,6 +973,9 @@ function Dashboard() {
           <LeftSidebar 
             isOpen={isLeftSidebarOpen} 
             onToggle={toggleLeftSidebar}
+            onNewChat={() => setIsChatMode(false)}
+            onSelectChat={handleSelectChat}
+            selectedChatId={selectedChatId}
           />
           
           <div className="flex-1">
@@ -1070,6 +1099,8 @@ function Dashboard() {
           isOpen={isLeftSidebarOpen} 
           onToggle={toggleLeftSidebar}
           onNewChat={() => setIsChatMode(false)}
+          onSelectChat={handleSelectChat}
+          selectedChatId={selectedChatId}
         />
         
         <div className="flex-1">
@@ -1159,12 +1190,12 @@ function Dashboard() {
                       >
                         {renderMessage(message)}
                         
-                        {message.suggestions && message.sender === 'ai' && (
+                        {message.suggestions && Array.isArray(message.suggestions) && message.suggestions.length > 0 && message.sender === 'ai' && (
                           <div className="mt-4 space-y-2">
                             {message.suggestions.map((suggestion, index) => {
                               return (
                                 <button
-                                  key={index}
+                                  key={`suggestion-${message.id}-${index}`}
                                   onClick={() => handleSuggestionClick(suggestion)}
                                   className="block w-full text-left text-sm bg-white border-2 border-blue-200 text-black shadow-md hover:border-blue-400 hover:shadow-lg rounded-xl px-4 py-3 transition-all duration-200 font-bold"
                                 >
