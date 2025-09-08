@@ -20,6 +20,7 @@ function Dashboard() {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isFaqPopupOpen, setIsFaqPopupOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   // 사이드바 토글 함수들
   const toggleLeftSidebar = () => {
@@ -101,6 +102,7 @@ function Dashboard() {
       setIsLeftSidebarOpen(false);
       setIsRightSidebarOpen(false);
       setIsFaqPopupOpen(false);
+      setSelectedCategory(null); // 선택된 카테고리 초기화
     };
 
     window.addEventListener('resetDashboard', handleResetDashboard);
@@ -211,6 +213,7 @@ function Dashboard() {
 
   // 프리셋 질문 클릭 처리 함수
   const handleQuestionClick = async (category) => {
+    setSelectedCategory(category); // 선택된 카테고리 설정
     setIsChatMode(true);
     setIsChatHistoryOpen(false);
     
@@ -949,7 +952,7 @@ function Dashboard() {
           <div className="flex-1">
             <div className="max-w-6xl mx-auto p-8">
               {/* 메인 제목 */}
-              <div className="text-center mb-12 flex flex-col items-center">
+              <div className="text-center mb-12 mt-16 flex flex-col items-center">
                 <h1 className="text-4xl font-bold text-blue-600 mb-4 text-center">
                   돌봄다리 AI 전문가의 24시간 상담 서비스
                 </h1>
@@ -993,9 +996,13 @@ function Dashboard() {
                       <button
                         key={category.name}
                         onClick={() => handleQuestionClick(category.name)}
-                        className="bg-white border-2 border-blue-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all duration-200 text-center group h-24 flex flex-col justify-center items-center"
+                        className={`bg-white border-2 rounded-lg p-4 hover:shadow-md transition-all duration-200 text-center group h-16 flex flex-col justify-center items-center focus:outline-none ${
+                          selectedCategory === category.name 
+                            ? 'border-blue-400 shadow-md focus:border-blue-400' 
+                            : 'border-gray-200 hover:border-gray-400 focus:border-gray-400'
+                        }`}
                       >
-                        <div className="flex flex-col items-center space-y-2">
+                        <div className="flex items-center space-x-2">
                           <span className="text-2xl group-hover:scale-110 transition-transform">{category.icon}</span>
                           <div className="font-medium text-blue-600 group-hover:text-blue-700 transition-colors text-base leading-tight">
                             {category.name}
@@ -1085,13 +1092,17 @@ function Dashboard() {
                   <button
                     key={category.name}
                     onClick={() => handleQuestionClick(category.name)}
-                    className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm hover:bg-blue-100 transition-colors flex items-center gap-1"
+                    className={`bg-white border-2 text-blue-600 px-4 py-2 rounded-lg text-sm hover:shadow-md transition-all duration-200 flex items-center gap-2 focus:outline-none ${
+                      selectedCategory === category.name 
+                        ? 'border-blue-400 shadow-md focus:border-blue-400' 
+                        : 'border-gray-200 hover:border-gray-400 focus:border-gray-400'
+                    }`}
                   >
                     <span>{category.icon}</span>
                     <span>{category.name}</span>
                   </button>
                 ))}
-                <button className="bg-gray-50 text-gray-600 px-3 py-1 rounded-full text-sm hover:bg-gray-100 transition-colors">
+                <button className="bg-white border-2 border-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm hover:border-gray-400 hover:shadow-md transition-all duration-200 focus:outline-none focus:border-gray-400">
                   더보기
                 </button>
               </div>
@@ -1151,23 +1162,11 @@ function Dashboard() {
                         {message.suggestions && message.sender === 'ai' && (
                           <div className="mt-4 space-y-2">
                             {message.suggestions.map((suggestion, index) => {
-                              // 색상 배열 정의
-                              const colors = [
-                                { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', hoverBg: 'hover:bg-blue-100', hoverText: 'hover:text-blue-900' },
-                                { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-800', hoverBg: 'hover:bg-green-100', hoverText: 'hover:text-green-900' },
-                                { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-800', hoverBg: 'hover:bg-purple-100', hoverText: 'hover:text-purple-900' },
-                                { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-800', hoverBg: 'hover:bg-orange-100', hoverText: 'hover:text-orange-900' },
-                                { bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-800', hoverBg: 'hover:bg-teal-100', hoverText: 'hover:text-teal-900' },
-                                { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-800', hoverBg: 'hover:bg-pink-100', hoverText: 'hover:text-pink-900' }
-                              ];
-                              
-                              const color = colors[index % colors.length];
-                              
                               return (
                                 <button
                                   key={index}
                                   onClick={() => handleSuggestionClick(suggestion)}
-                                  className={`block w-full text-left text-sm ${color.bg} ${color.border} ${color.text} ${color.hoverBg} ${color.hoverText} rounded-lg px-4 py-3 transition-all duration-200 font-medium`}
+                                  className="block w-full text-left text-sm bg-white border-2 border-blue-200 text-blue-600 hover:border-blue-400 hover:shadow-md rounded-lg px-4 py-3 transition-all duration-200 font-medium"
                                 >
                                   {suggestion}
                                 </button>
