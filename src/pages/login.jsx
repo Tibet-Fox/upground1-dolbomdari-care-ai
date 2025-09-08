@@ -38,7 +38,7 @@ function Login() {
           localStorage.setItem('refresh_token', response.refresh_token);
         }
         
-        localStorage.setItem('user', JSON.stringify(response.user || { email }));
+        localStorage.setItem('user', JSON.stringify(response.user || { email }));햐
         
         console.log('토큰 저장 완료:', {
           access_token: !!response.token,
