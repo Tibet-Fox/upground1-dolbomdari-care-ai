@@ -86,9 +86,9 @@ function LeftSidebar({
         <div className="p-4 border-b border-gray-200">
           <button 
             onClick={onToggle}
-            className="w-full bg-blue-600 text-white py-3 px-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+            className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400"
           >
-            ☰
+            <span>☰</span>
           </button>
         </div>
         
@@ -127,9 +127,10 @@ function LeftSidebar({
         <div className="flex items-center justify-between">
           <button 
             onClick={handleNewChat}
-            className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="flex-1 bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400"
           >
-            새 채팅
+            <span>💬</span>
+            <span>새 채팅</span>
           </button>
           <button 
             onClick={onToggle}
@@ -224,20 +225,21 @@ function LeftSidebar({
           </div>
         )}
         
-        <a href="#" className="block text-gray-700 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-          북마크한 답변
-        </a>
+        <button className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400">
+          <span>🔖</span>
+          <span>북마크한 답변</span>
+        </button>
       </div>
       
       {/* 설정 */}
       <div className="p-4 border-t border-gray-200">
-        <a href="#" className="flex items-center text-gray-700 hover:text-blue-600 py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button className="w-full bg-gradient-to-b from-white to-gray-100 border-2 border-blue-400 text-black font-bold px-4 py-2 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 focus:outline-none transform hover:-translate-y-1 active:translate-y-0 hover:bg-gradient-to-b hover:from-blue-50 hover:to-blue-100 focus:border-blue-400">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          설정
-        </a>
+          <span>설정</span>
+        </button>
       </div>
     </aside>
   );

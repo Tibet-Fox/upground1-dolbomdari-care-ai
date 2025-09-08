@@ -1042,7 +1042,7 @@ function Dashboard() {
                   </div>
 
                   {/* 채팅 입력 영역 */}
-                  <div className="bg-white rounded-lg border border-gray-300 p-4 shadow-sm">
+                  <div className="bg-gradient-to-b from-white to-gray-50 rounded-xl border-2 border-gray-200 p-4 shadow-xl hover:shadow-2xl transition-all duration-300">
                     <div className="flex items-center gap-3">
                       <input
                         type="text"
@@ -1050,16 +1050,16 @@ function Dashboard() {
                         onChange={(e) => setInputText(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                         placeholder={isLoggedIn ? "무엇이든 궁금한 점이 있다면 편하게 말씀해주세요." : "채팅은 로그인 후 이용하실 수 있습니다."}
-                        className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400 text-sm"
+                        className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400 text-sm bg-transparent"
                         disabled={!isLoggedIn}
                       />
                       <button
                         onClick={handleSendMessage}
                         disabled={!inputText.trim() || isLoading || !isLoggedIn}
-                        className={`p-2 rounded-full transition-colors shadow-sm ${
+                        className={`p-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 ${
                           isLoggedIn 
-                            ? 'bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed' 
-                            : 'bg-gray-400 text-white cursor-not-allowed'
+                            ? 'bg-gradient-to-b from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none' 
+                            : 'bg-gradient-to-b from-gray-400 to-gray-500 text-white cursor-not-allowed'
                         }`}
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1238,7 +1238,7 @@ function Dashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="bg-gradient-to-b from-white to-gray-50 rounded-xl border-2 border-gray-200 p-4 shadow-xl hover:shadow-2xl transition-all duration-300">
               <div className="flex items-center space-x-3">
                 <input
                   type="text"
@@ -1246,12 +1246,12 @@ function Dashboard() {
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   placeholder="무엇이든 궁금한 점이 있다면 편하게 말씀해주세요."
-                  className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400"
+                  className="flex-1 border-none outline-none text-gray-700 placeholder-gray-400 bg-transparent"
                 />
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputText.trim() || isLoading}
-                  className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="bg-gradient-to-b from-blue-500 to-blue-600 text-white p-3 rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 disabled:transform-none"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
