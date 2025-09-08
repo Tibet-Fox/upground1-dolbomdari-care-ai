@@ -42,6 +42,10 @@ function SignupPopup({ isOpen, onClose }) {
                   src="/dolbom_sign.png" 
                   alt="돌봄 캐릭터" 
                   className="w-24 h-24 object-contain"
+                  onError={(e) => {
+                    console.log('이미지 로드 실패:', e.target.src);
+                    e.target.src = '/svc.png'; // fallback 이미지
+                  }}
                 />
                 {/* Wi-Fi 신호 아이콘 */}
                 <div className="absolute -top-2 -right-2">
