@@ -42,7 +42,7 @@ function Step1() {
             <div className="mb-6">
               <div className="w-32 h-32 mx-auto mb-4 relative">
                 <img 
-                  src="/svc.png" 
+                  src="/dolbom_sign.png" 
                   alt="AI 캐릭터" 
                   className="w-full h-full object-contain"
                 />
