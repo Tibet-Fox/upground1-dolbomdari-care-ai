@@ -20,9 +20,9 @@ function SignupPopup({ isOpen, onClose }) {
       
       {/* 팝업 */}
       <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-xl max-w-sm w-full mx-4 overflow-hidden relative">
           {/* 닫기 버튼 */}
-          <div className="flex justify-end p-4">
+          <div className="absolute top-4 right-4 z-10">
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -34,43 +34,39 @@ function SignupPopup({ isOpen, onClose }) {
           </div>
 
           {/* 팝업 내용 */}
-          <div className="px-6 pb-6">
-            <div className="flex items-start gap-4">
-              {/* AI 캐릭터 이미지 */}
-              <div className="flex-shrink-0">
-                <div className="relative">
-                  <img 
-                    src="/svc.png" 
-                    alt="AI 캐릭터" 
-                    className="w-20 h-20 object-contain"
-                  />
-                  {/* Wi-Fi 신호 끊김 표시 */}
-                  <div className="absolute -top-1 -right-1">
-                    <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
-                    </svg>
-                  </div>
+          <div className="px-8 py-8 text-center">
+            {/* 캐릭터 이미지 */}
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                <img 
+                  src="/dolbom_sign.png" 
+                  alt="돌봄 캐릭터" 
+                  className="w-24 h-24 object-contain"
+                />
+                {/* Wi-Fi 신호 아이콘 */}
+                <div className="absolute -top-2 -right-2">
+                  <svg className="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.07 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+                  </svg>
                 </div>
               </div>
-
-              {/* 텍스트 내용 */}
-              <div className="flex-1">
-                <h3 className="text-base font-semibold text-gray-800 mb-2">
-                  앗! 아직 회원가입되지 않았어요!
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  로그인은 회원가입 후 이용하실 수 있어요
-                </p>
-                
-                {/* 회원가입 버튼 */}
-                <button
-                  onClick={handleSignup}
-                  className="w-full bg-blue-500 text-white py-2.5 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium text-sm"
-                >
-                  회원가입
-                </button>
-              </div>
             </div>
+
+            {/* 메시지 */}
+            <h3 className="text-lg font-bold text-gray-800 mb-3">
+              앗! 아직 회원가입되지 않았어요!
+            </h3>
+            <p className="text-gray-600 text-sm mb-6">
+              로그인은 회원가입 후 이용하실 수 있어요
+            </p>
+            
+            {/* 회원가입 버튼 */}
+            <button
+              onClick={handleSignup}
+              className="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors font-medium"
+            >
+              회원가입
+            </button>
           </div>
         </div>
       </div>
