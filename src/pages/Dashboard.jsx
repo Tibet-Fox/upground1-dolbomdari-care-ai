@@ -1005,10 +1005,10 @@ function Dashboard() {
 
                 {/* 콘텐츠 영역 */}
                 <div className="flex-1 max-w-4xl">
-                  <div className="text-blue-600 text-lg mb-4">
+                  <div className="text-blue-600 text-lg mb-4 font-bold">
                     아래 선택지 중에서 궁금한 걸 골라보세요.
                   </div>
-                  <div className="text-blue-600 text-lg mb-8">
+                  <div className="text-blue-600 text-lg mb-8 font-bold">
                     돌봄이가 빠르게 답해드릴게요!
                   </div>
 
