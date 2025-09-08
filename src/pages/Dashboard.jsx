@@ -996,15 +996,15 @@ function Dashboard() {
                       <button
                         key={category.name}
                         onClick={() => handleQuestionClick(category.name)}
-                        className={`bg-white border-2 rounded-lg p-4 hover:shadow-md transition-all duration-200 text-center group h-16 flex flex-col justify-center items-center focus:outline-none ${
+                        className={`bg-white border-2 rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-200 text-center group h-16 flex flex-col justify-center items-center focus:outline-none ${
                           selectedCategory === category.name 
-                            ? 'border-blue-400 shadow-md focus:border-blue-400' 
-                            : 'border-gray-200 hover:border-gray-400 focus:border-gray-400'
+                            ? 'border-blue-400 shadow-xl focus:border-blue-400' 
+                            : 'border-gray-200 hover:border-blue-400 focus:border-blue-400'
                         }`}
                       >
                         <div className="flex items-center space-x-2">
                           <span className="text-2xl group-hover:scale-110 transition-transform">{category.icon}</span>
-                          <div className="font-medium text-blue-600 group-hover:text-blue-700 transition-colors text-base leading-tight">
+                          <div className="font-medium text-black group-hover:text-gray-800 transition-colors text-base leading-tight">
                             {category.name}
                           </div>
                         </div>
@@ -1092,9 +1092,9 @@ function Dashboard() {
                   <button
                     key={category.name}
                     onClick={() => handleQuestionClick(category.name)}
-                    className={`bg-white border-2 text-blue-600 px-4 py-2 rounded-lg text-sm hover:shadow-md transition-all duration-200 flex items-center gap-2 focus:outline-none ${
+                    className={`bg-white border-2 text-black px-4 py-2 rounded-lg text-sm shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 focus:outline-none ${
                       selectedCategory === category.name 
-                        ? 'border-blue-400 shadow-md focus:border-blue-400' 
+                        ? 'border-blue-400 shadow-lg focus:border-blue-400' 
                         : 'border-gray-200 hover:border-gray-400 focus:border-gray-400'
                     }`}
                   >
@@ -1102,7 +1102,7 @@ function Dashboard() {
                     <span>{category.name}</span>
                   </button>
                 ))}
-                <button className="bg-white border-2 border-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm hover:border-gray-400 hover:shadow-md transition-all duration-200 focus:outline-none focus:border-gray-400">
+                <button className="bg-white border-2 border-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm shadow-md hover:border-gray-400 hover:shadow-lg transition-all duration-200 focus:outline-none focus:border-gray-400">
                   더보기
                 </button>
               </div>
@@ -1166,7 +1166,7 @@ function Dashboard() {
                                 <button
                                   key={index}
                                   onClick={() => handleSuggestionClick(suggestion)}
-                                  className="block w-full text-left text-sm bg-white border-2 border-blue-200 text-blue-600 hover:border-blue-400 hover:shadow-md rounded-lg px-4 py-3 transition-all duration-200 font-medium"
+                                  className="block w-full text-left text-sm bg-white border-2 border-blue-200 text-black shadow-md hover:border-blue-400 hover:shadow-lg rounded-lg px-4 py-3 transition-all duration-200 font-medium"
                                 >
                                   {suggestion}
                                 </button>
