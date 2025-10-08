@@ -29,6 +29,9 @@ export const getFaqQuestions = async (categoryId) => {
     }
 
     console.log('FAQ 질문 목록 조회 API 호출 - 카테고리 ID:', categoryId);
+    console.log('카테고리 ID 타입:', typeof categoryId);
+    console.log('API 요청 URL:', `/faq/questions?category_id=${categoryId}`);
+    
     const response = await instance.get('/faq/questions', {
       params: { category_id: categoryId },
       withCredentials: false

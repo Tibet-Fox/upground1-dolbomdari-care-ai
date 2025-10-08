@@ -61,6 +61,7 @@ function ChatPage() {
     const categoryId = parseInt(categoryParam);
     const isNumeric = !isNaN(categoryId);
     
+    console.log('=== 카테고리 파라미터 분석 ===');
     console.log('받은 카테고리 파라미터:', categoryParam);
     console.log('파싱된 카테고리 ID:', categoryId);
     console.log('숫자인가?', isNumeric);
@@ -98,6 +99,11 @@ function ChatPage() {
       console.log('카테고리 ID로 찾은 이름:', categoryName);
     }
     
+    console.log('=== 최종 카테고리 정보 ===');
+    console.log('카테고리 이름:', categoryName);
+    console.log('카테고리 ID:', finalCategoryId);
+    console.log('카테고리 ID 타입:', typeof finalCategoryId);
+    
     setSelectedCategory(categoryName);
 
     const userMessage = {
@@ -113,7 +119,7 @@ function ChatPage() {
       // 백엔드 FAQ API에서 카테고리별 질문 목록 가져오기
       console.log('카테고리 질문 목록 요청 - ID:', finalCategoryId, '이름:', categoryName);
       
-      if (finalCategoryId) {
+      if (finalCategoryId && finalCategoryId > 0) {
         console.log('=== API 호출 시작 ===');
         console.log('호출할 카테고리 ID:', finalCategoryId);
         console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL || "https://api.carebridges.o-r.kr");
@@ -159,7 +165,10 @@ function ChatPage() {
         }
       } else {
         // 카테고리 ID를 찾을 수 없는 경우
+        console.log('=== 카테고리 ID 없음 ===');
         console.log('카테고리 ID를 찾을 수 없음:', categoryName);
+        console.log('finalCategoryId 값:', finalCategoryId);
+        
         const botMessage = {
           id: Date.now() + 1,
           text: `${categoryName}에 대해 궁금하신 점을 자유롭게 질문해주세요.`,

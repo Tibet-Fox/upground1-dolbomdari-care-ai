@@ -80,15 +80,33 @@ export const useCategoryData = () => {
   };
 
   const getCategoryQuestions = async (categoryId) => {
+    console.log('=== useCategoryData.getCategoryQuestions 호출 ===');
+    console.log('받은 categoryId:', categoryId);
+    console.log('categoryId 타입:', typeof categoryId);
+    console.log('categoryId가 유효한가?', categoryId && categoryId > 0);
+    
+    if (!categoryId || categoryId <= 0) {
+      console.error('유효하지 않은 categoryId:', categoryId);
+      return [];
+    }
+    
     setIsLoading(true);
     try {
+      console.log('getFaqQuestions 호출 시작...');
       const questions = await getFaqQuestions(categoryId);
+      console.log('getFaqQuestions 응답:', questions);
+      console.log('응답 타입:', typeof questions);
+      console.log('배열인가?', Array.isArray(questions));
+      console.log('길이:', questions ? questions.length : 'null/undefined');
       return questions;
     } catch (error) {
       console.error('카테고리 질문 조회 실패:', error);
+      console.error('에러 상세:', error.response?.data);
+      console.error('에러 상태:', error.response?.status);
       return [];
     } finally {
       setIsLoading(false);
+      console.log('=== useCategoryData.getCategoryQuestions 완료 ===');
     }
   };
 
