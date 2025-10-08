@@ -176,6 +176,94 @@ export const getConversationDetails = async (conversationId) => {
   }
 };
 
+// 카테고리별 초기 답변 API
+export const getCategoryInitialResponse = async (categoryName) => {
+  try {
+    if (!categoryName || typeof categoryName !== 'string') {
+      throw new Error('유효하지 않은 카테고리입니다.');
+    }
+
+    console.log('카테고리 초기 답변 요청:', categoryName);
+    
+    // 인증 상태 확인
+    const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+    if (!token) {
+      throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+    }
+
+    const response = await instance.post('/chat/category-initial', {
+      category: categoryName
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      withCredentials: false
+    });
+
+    console.log('카테고리 초기 답변 응답:', response.data);
+    
+    // 응답 형식: { greeting, suggestions }
+    return response.data;
+  } catch (error) {
+    console.error('카테고리 초기 답변 API 오류:', error.response?.data || error.message);
+    
+    if (error.response?.status === 401) {
+      throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+    }
+    
+    if (error.response?.status === 404) {
+      throw new Error('카테고리 답변 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
+    throw error;
+  }
+};
+
+// 새로운 AI 답변 API (message_id, content, sources 형식)
+export const askAI = async (userMessage) => {
+  try {
+    if (!userMessage || typeof userMessage !== 'string') {
+      throw new Error('유효하지 않은 메시지입니다.');
+    }
+
+    console.log('AI 질문:', userMessage);
+    
+    // 인증 상태 확인
+    const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+    if (!token) {
+      throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+    }
+
+    const response = await instance.post('/chat/ask', {
+      message: userMessage
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      withCredentials: false
+    });
+
+    console.log('AI 응답 수신:', response.data);
+    
+    // 응답 형식: { message_id, content, sources }
+    return response.data;
+  } catch (error) {
+    console.error('AI API 오류:', error.response?.data || error.message);
+    
+    if (error.response?.status === 401) {
+      throw new Error('로그인이 필요합니다. 다시 로그인해주세요.');
+    }
+    
+    if (error.response?.status === 404) {
+      throw new Error('AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
+    throw error;
+  }
+};
+
 // 챗봇에게 질문하기 - 명세에 따라 올바른 API 사용
 export const askChatbot = async (userMessage) => {
   try {
