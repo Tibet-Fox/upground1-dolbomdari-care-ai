@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/carebridges-frontend/',
+  base: '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

@@ -21,24 +21,52 @@ function MyPage() {
   useEffect(() => {
     const loadUserInfo = () => {
       try {
+        // localStorage의 모든 키 확인
+        console.log('localStorage의 모든 키:', Object.keys(localStorage));
+        console.log('localStorage 전체 내용:', localStorage);
+        
         const user = localStorage.getItem('user');
+        console.log('localStorage에서 가져온 user 데이터:', user);
+        
         if (user) {
           const userData = JSON.parse(user);
+          console.log('파싱된 userData:', userData);
           setUserInfo(userData);
           
-          // 폼 데이터 설정
+          // 폼 데이터 설정 (회원가입 시 입력한 정보 사용)
           const email = userData.email || '';
           const [emailId, emailDomain] = email.split('@');
           
-          setFormData({
+          const newFormData = {
             name: userData.name || '',
-            birthDate: userData.birthDate || '1959/03/18',
-            emailId: emailId || 'carebridge',
-            emailDomain: emailDomain || 'gmail.com',
-            phone: userData.phone || '010-1234-5678',
-            password: 'carebridge',
-            confirmPassword: 'carebridge'
-          });
+            birthDate: userData.birthDate || '',
+            emailId: emailId || '',
+            emailDomain: emailDomain || '',
+            phone: userData.phone || '',
+            password: '',
+            confirmPassword: ''
+          };
+          
+          console.log('설정할 폼 데이터:', newFormData);
+          setFormData(newFormData);
+        } else {
+          console.log('localStorage에 user 데이터가 없습니다.');
+          console.log('현재 localStorage 내용:', localStorage);
+          
+          // 로그인은 했지만 사용자 정보가 없는 경우 (기본 정보로 폼 초기화)
+          const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+          if (token) {
+            console.log('토큰은 있지만 사용자 정보가 없습니다. 기본 정보로 초기화합니다.');
+            setFormData({
+              name: '',
+              birthDate: '',
+              emailId: '',
+              emailDomain: '',
+              phone: '',
+              password: '',
+              confirmPassword: ''
+            });
+          }
         }
       } catch (error) {
         console.error('사용자 정보 로드 실패:', error);
@@ -52,39 +80,6 @@ function MyPage() {
     setIsLeftSidebarOpen(!isLeftSidebarOpen);
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSubmit = () => {
-    // 폼 데이터 검증
-    if (!formData.name || !formData.birthDate || !formData.emailId || !formData.emailDomain || !formData.phone || !formData.password) {
-      alert('모든 필수 항목을 입력해주세요.');
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다.');
-      return;
-    }
-
-    // 사용자 정보 업데이트
-    const updatedUserInfo = {
-      ...userInfo,
-      name: formData.name,
-      birthDate: formData.birthDate,
-      email: `${formData.emailId}@${formData.emailDomain}`,
-      phone: formData.phone
-    };
-
-    localStorage.setItem('user', JSON.stringify(updatedUserInfo));
-    setUserInfo(updatedUserInfo);
-    
-    alert('프로필이 수정되었습니다.');
-  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -136,13 +131,13 @@ function MyPage() {
               </div>
             </div>
 
-            {/* 프로필 수정 섹션 */}
+            {/* 회원 정보 조회 섹션 */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                프로필 수정
+                회원 정보
               </h2>
               <p className="text-sm text-gray-500 mb-6">
-                <span className="text-red-500">*</span>표시는 필수 입력 사항
+                회원가입 시 입력하신 정보입니다.
               </p>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -166,98 +161,57 @@ function MyPage() {
                   </div>
                 </div>
 
-                {/* 사용자 정보 폼 */}
+                {/* 사용자 정보 표시 */}
                 <div className="lg:col-span-2">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* 성명 */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        성명<span className="text-red-500">*</span>
+                        성명
                       </label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => handleInputChange('name', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        성명은 꼭 실명으로 입력해 주시기 바랍니다.
-                      </p>
+                      <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                        {formData.name || '정보 없음'}
+                      </div>
                     </div>
 
                     {/* 생년월일 */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        생년월일<span className="text-red-500">*</span>
+                        생년월일
                       </label>
-                      <input
-                        type="text"
-                        value={formData.birthDate}
-                        onChange={(e) => handleInputChange('birthDate', e.target.value)}
-                        placeholder="ex. 2000/01/01"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
+                      <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                        {formData.birthDate || '정보 없음'}
+                      </div>
                     </div>
 
                     {/* 이메일 */}
                     <div className="lg:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        이메일<span className="text-red-500">*</span>
+                        이메일
                       </label>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={formData.emailId}
-                          onChange={(e) => handleInputChange('emailId', e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <span className="text-gray-500">@</span>
-                        <input
-                          type="text"
-                          value={formData.emailDomain}
-                          onChange={(e) => handleInputChange('emailDomain', e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
+                      <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                        {formData.emailId && formData.emailDomain ? `${formData.emailId}@${formData.emailDomain}` : '정보 없음'}
                       </div>
                     </div>
 
                     {/* 전화번호 */}
                     <div className="lg:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        전화번호<span className="text-red-500">*</span>
+                        전화번호
                       </label>
-                      <input
-                        type="text"
-                        value={formData.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
+                      <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                        {formData.phone || '정보 없음'}
+                      </div>
                     </div>
 
-                    {/* 비밀번호 */}
-                    <div>
+                    {/* 회원 ID */}
+                    <div className="lg:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        비밀번호<span className="text-red-500">*</span>
+                        회원 ID
                       </label>
-                      <input
-                        type="password"
-                        value={formData.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-
-                    {/* 비밀번호 확인 */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        비밀번호 확인<span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="password"
-                        value={formData.confirmPassword}
-                        onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
+                      <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                        {userInfo?.worker_id || '정보 없음'}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -266,14 +220,8 @@ function MyPage() {
               {/* 하단 버튼 */}
               <div className="flex gap-4 mt-8 pt-6 border-t border-gray-200">
                 <button
-                  onClick={handleSubmit}
-                  className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  수정
-                </button>
-                <button
                   onClick={handleLogout}
-                  className="flex-1 bg-white text-gray-700 py-3 px-6 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors font-medium"
+                  className="w-full bg-white text-gray-700 py-3 px-6 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors font-medium"
                 >
                   로그아웃
                 </button>

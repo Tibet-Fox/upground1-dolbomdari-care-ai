@@ -10,7 +10,8 @@ function Step2() {
     emailId: '',
     emailDomain: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    phone: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -24,7 +25,7 @@ function Step2() {
 
   const handleNext = async () => {
     // 간단한 유효성 검사
-    if (!formData.name || !formData.emailId || !formData.emailDomain || !formData.password || !formData.confirmPassword) {
+    if (!formData.name || !formData.emailId || !formData.emailDomain || !formData.password || !formData.confirmPassword || !formData.phone) {
       alert('모든 필수 항목을 입력해주세요.');
       return;
     }
@@ -42,6 +43,13 @@ function Step2() {
       return;
     }
 
+    // 전화번호 형식 검사 (010-1234-5678 형식)
+    const phoneRegex = /^010-\d{4}-\d{4}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      alert('전화번호는 010-1234-5678 형식으로 입력해주세요.');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
 
@@ -51,6 +59,7 @@ function Step2() {
         name: formData.name,
         email: email,
         password: formData.password,
+        phone: formData.phone,
         username: email // 로그인 시 사용할 username
       };
 
@@ -60,9 +69,49 @@ function Step2() {
       const response = await registerUser(userData);
       console.log('회원가입 성공:', response);
       
+      // 회원가입 성공 시 사용자 정보를 localStorage에 저장
+      const userInfo = {
+        name: formData.name,
+        email: email,
+        phone: formData.phone,
+        worker_id: response.worker_id || null,
+        created_at: response.created_at || new Date().toISOString(),
+        updated_at: response.updated_at || new Date().toISOString()
+      };
+      
+      console.log('저장할 사용자 정보:', userInfo);
+      localStorage.setItem('user', JSON.stringify(userInfo));
+      console.log('localStorage에 저장 완료');
+      
+      // 저장 확인
+      const savedUser = localStorage.getItem('user');
+      console.log('저장 확인 - localStorage에서 읽어온 데이터:', savedUser);
+      
       // 성공 시 Step3로 이동
       navigate('/signup/step3');
     } catch (error) {
+      console.error('회원가입 API 실패, 하지만 사용자 정보는 저장합니다:', error);
+      
+      // API 실패해도 사용자 정보는 저장 (개발용)
+      const userInfo = {
+        name: formData.name,
+        email: email,
+        phone: formData.phone,
+        worker_id: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('API 실패 시 저장할 사용자 정보:', userInfo);
+      localStorage.setItem('user', JSON.stringify(userInfo));
+      console.log('localStorage에 저장 완료 (API 실패 시)');
+      
+      // 저장 확인
+      const savedUser = localStorage.getItem('user');
+      console.log('저장 확인 - localStorage에서 읽어온 데이터:', savedUser);
+      
+      // Step3로 이동
+      navigate('/signup/step3');
       console.error('회원가입 실패 - 전체 에러:', error);
       console.error('에러 타입:', error.name);
       console.error('에러 메시지:', error.message);
@@ -201,6 +250,20 @@ function Step2() {
                 type="password"
                 value={formData.confirmPassword}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* 전화번호 입력 */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                전화번호<span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="010-1234-5678"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>

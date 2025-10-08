@@ -26,6 +26,7 @@ function Login() {
     try {
       const response = await loginUser(email, password);
       console.log('로그인 성공:', response);
+      console.log('응답에 사용자 정보가 있는지 확인:', response.user);
       
       // 로그인 성공 시 localStorage에 토큰과 사용자 정보 저장
       if (response.token) {
@@ -38,7 +39,18 @@ function Login() {
           localStorage.setItem('refresh_token', response.refresh_token);
         }
         
-        localStorage.setItem('user', JSON.stringify(response.user || { email }));햐
+        // 사용자 정보 저장 (응답에 사용자 정보가 있으면 사용, 없으면 기본 정보로 생성)
+        const userInfo = response.user || {
+          email: email,
+          name: '', // 로그인 시에는 이름 정보가 없을 수 있음
+          phone: '',
+          worker_id: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        console.log('로그인 시 저장할 사용자 정보:', userInfo);
+        localStorage.setItem('user', JSON.stringify(userInfo));
         
         console.log('토큰 저장 완료:', {
           access_token: !!response.token,

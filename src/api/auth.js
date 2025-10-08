@@ -23,6 +23,11 @@ export const loginUser = async (email, password) => {
       localStorage.setItem('refresh_token', response.data.refresh_token);
     }
     
+    // 사용자 정보 저장 (응답에 사용자 정보가 포함된 경우)
+    if (response.data.user) {
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    
     return response.data;
   } catch (error) {
     throw error;
@@ -32,12 +37,13 @@ export const loginUser = async (email, password) => {
 // 회원가입 API
 export const registerUser = async (userData) => {
   try {
-    // 백엔드 API 형식에 맞게 데이터 변환
+    // 백엔드 API 형식에 맞게 데이터 변환 (이미지 형식에 맞춤)
     const apiData = {
-      name: userData.name,
       email: userData.email,
+      name: userData.name,
       password1: userData.password, // password1으로 변경
-      password2: userData.password  // password2로 변경 (확인용)
+      password2: userData.password, // password2로 변경 (확인용)
+      phone: userData.phone
     };
     
     console.log('회원가입 API 호출:', apiData);
