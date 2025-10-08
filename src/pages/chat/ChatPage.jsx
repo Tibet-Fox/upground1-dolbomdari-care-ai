@@ -68,12 +68,28 @@ function ChatPage() {
     let categoryName = categoryParam;
     let finalCategoryId = categoryId;
     
+    // 카테고리 이름을 ID로 매핑 (직접 매핑)
+    const categoryNameToIdMap = {
+      '요양보호사 입·퇴사': 1,
+      '급여 계산': 2,
+      '제공계획서 작성': 3,
+      '2025 고시 변경': 4,
+      '상담일지 작성': 5,
+      'AI 상담 사용법': 6
+    };
+    
     // 숫자가 아니라면 카테고리 이름에서 ID 찾기
     if (!isNumeric) {
       categoryName = categoryParam;
-      const categoryData = getCategoryByName(categoryParam);
-      finalCategoryId = categoryData?.id;
-      console.log('카테고리 이름으로 찾은 ID:', finalCategoryId);
+      finalCategoryId = categoryNameToIdMap[categoryParam];
+      console.log('카테고리 이름으로 찾은 ID (직접 매핑):', finalCategoryId);
+      
+      // 직접 매핑으로 찾지 못한 경우 기존 함수 사용
+      if (!finalCategoryId) {
+        const categoryData = getCategoryByName(categoryParam);
+        finalCategoryId = categoryData?.id;
+        console.log('카테고리 이름으로 찾은 ID (함수):', finalCategoryId);
+      }
     } else {
       // 숫자라면 카테고리 ID로 이름 찾기
       const categoryData = getCategoryById(categoryId);
@@ -110,10 +126,10 @@ function ChatPage() {
         
         if (questions && questions.length > 0) {
           console.log('=== 제안 질문 생성 시작 ===');
-          // 백엔드 응답 형식에 맞춰 제안 질문 생성
+          // 백엔드 API에서 받은 질문 목록 사용
           const suggestions = questions.map((q, index) => {
             console.log(`질문 ${index + 1}:`, q);
-            return `Q${index + 1}. ${q.question}`;
+            return `Q${q.question_id}. ${q.question}`;
           });
           console.log('생성된 제안 질문:', suggestions);
           
@@ -189,13 +205,15 @@ function ChatPage() {
     setMessages(prev => [...prev, newMessage]);
 
      try {
-       // 질문에서 ID 추출 (Q1. 질문내용 -> 1)
+       // 질문에서 ID 추출 (Q5. 질문내용 -> 5)
        const questionIdMatch = suggestion.match(/Q(\d+)\./);
        if (questionIdMatch) {
          const questionId = parseInt(questionIdMatch[1]);
          console.log('질문 ID 추출:', questionId);
+         console.log('질문 ID 타입:', typeof questionId);
          
          // 질문 상세 조회 API 호출
+         console.log('질문 상세 조회 API 호출 시작...');
          const questionDetail = await getQuestionDetail(questionId);
          
          if (questionDetail) {
