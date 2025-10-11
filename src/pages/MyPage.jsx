@@ -30,6 +30,12 @@ function MyPage() {
         if (user) {
           const userData = JSON.parse(user);
           console.log('파싱된 userData:', userData);
+          
+          // organization 필드를 institution_name으로 매핑
+          if (userData.organization && !userData.institution_name) {
+            userData.institution_name = userData.organization;
+          }
+          
           setUserInfo(userData);
           
           // 폼 데이터 설정
@@ -58,6 +64,11 @@ function MyPage() {
               const { getUserInfo } = await import('../api/auth');
               const apiUserData = await getUserInfo();
               console.log('API에서 가져온 사용자 정보:', apiUserData);
+              
+              // organization 필드를 institution_name으로 매핑
+              if (apiUserData.organization && !apiUserData.institution_name) {
+                apiUserData.institution_name = apiUserData.organization;
+              }
               
               // localStorage에 저장
               localStorage.setItem('user', JSON.stringify(apiUserData));
@@ -185,7 +196,7 @@ function MyPage() {
                         기관명
                       </label>
                       <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
-                        {userInfo?.institution_name || '정보 없음'}
+                        {userInfo?.institution_name || userInfo?.organization || '정보 없음'}
                       </div>
                     </div>
 

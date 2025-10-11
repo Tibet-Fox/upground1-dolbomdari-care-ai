@@ -37,7 +37,7 @@ export const loginUser = async (email, password) => {
 // 회원가입 API
 export const registerUser = async (userData) => {
   try {
-    // 백엔드 API 형식에 맞게 데이터 변환 (이미지 형식에 맞춤)
+    // 백엔드 API 형식에 맞게 데이터 변환
     const apiData = {
       email: userData.email,
       name: userData.name,
@@ -45,6 +45,11 @@ export const registerUser = async (userData) => {
       password2: userData.password, // password2로 변경 (확인용)
       phone: userData.phone
     };
+    
+    // institution_name을 organization으로 매핑 (백엔드 필드명에 맞춤)
+    if (userData.institution_name) {
+      apiData.organization = userData.institution_name;
+    }
     
     console.log('회원가입 API 호출:', apiData);
     const response = await instance.post('/auth/register', apiData, {

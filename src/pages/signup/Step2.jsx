@@ -93,29 +93,6 @@ function Step2() {
       // 성공 시 Step3로 이동
       navigate('/signup/step3');
     } catch (error) {
-      console.error('회원가입 API 실패, 하지만 사용자 정보는 저장합니다:', error);
-      
-      // API 실패해도 사용자 정보는 저장 (개발용)
-      const userInfo = {
-        name: formData.name,
-        institution_name: formData.institutionName,
-        email: email,
-        phone: formData.phone,
-        worker_id: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      console.log('API 실패 시 저장할 사용자 정보:', userInfo);
-      localStorage.setItem('user', JSON.stringify(userInfo));
-      console.log('localStorage에 저장 완료 (API 실패 시)');
-      
-      // 저장 확인
-      const savedUser = localStorage.getItem('user');
-      console.log('저장 확인 - localStorage에서 읽어온 데이터:', savedUser);
-      
-      // Step3로 이동
-      navigate('/signup/step3');
       console.error('회원가입 실패 - 전체 에러:', error);
       console.error('에러 타입:', error.name);
       console.error('에러 메시지:', error.message);
@@ -125,16 +102,39 @@ function Step2() {
         console.error('응답 상태:', error.response.status);
         console.error('응답 데이터:', error.response.data);
         console.error('응답 헤더:', error.response.headers);
+        
+        // 422 유효성 검증 실패 시 상세 에러 표시
+        if (error.response.status === 422) {
+          console.error('=== 유효성 검증 실패 상세 정보 ===');
+          console.error('에러 메시지:', error.response.data.message);
+          if (error.response.data.errors && error.response.data.errors.length > 0) {
+            console.error('구체적인 에러들:');
+            error.response.data.errors.forEach((err, index) => {
+              console.error(`${index + 1}. 필드: ${err.field || 'N/A'}`);
+              console.error(`   메시지: ${err.message || err}`);
+              console.error(`   값: ${err.value || 'N/A'}`);
+            });
+          }
+          console.error('================================');
+          
+          // 사용자에게 에러 메시지 표시
+          setError(`회원가입 실패: ${error.response.data.message}`);
+          return; // 에러 시 진행 중단
+        }
+        
+        // 다른 HTTP 에러들
+        setError(`회원가입 실패: ${error.response.data.message || '서버 오류가 발생했습니다.'}`);
+        return;
       } else if (error.request) {
         console.error('요청은 보냈지만 응답을 받지 못함');
         console.error('요청:', error.request);
+        setError('네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.');
+        return;
       } else {
         console.error('요청 설정 중 오류 발생');
+        setError('알 수 없는 오류가 발생했습니다.');
+        return;
       }
-      
-      const errorMessage = error.response?.data?.message || error.message || '회원가입 중 오류가 발생했습니다.';
-      setError(errorMessage);
-      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
