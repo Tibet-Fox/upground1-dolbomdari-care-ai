@@ -120,7 +120,7 @@ export const resetPassword = async (token, newPassword) => {
   try {
     const response = await instance.post('/auth/reset-password', {
       token,
-      new_password: newPassword,
+      newPassword: newPassword,
     });
     return response.data;
   } catch (error) {

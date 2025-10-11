@@ -16,10 +16,11 @@ function ResetPassword() {
   useEffect(() => {
     // URL에서 토큰 추출
     const tokenFromUrl = searchParams.get('token');
-    if (tokenFromUrl) {
+    if (tokenFromUrl && tokenFromUrl.length > 0) {
       setToken(tokenFromUrl);
+      console.log('토큰 추출 완료:', tokenFromUrl);
     } else {
-      setError('유효하지 않은 링크입니다.');
+      setError('유효하지 않은 링크입니다. 토큰이 없거나 잘못된 형식입니다.');
     }
   }, [searchParams]);
 
@@ -54,12 +55,16 @@ function ResetPassword() {
       setShowResult(true);
     } catch (err) {
       console.error('비밀번호 재설정 실패:', err);
+      console.error('에러 응답:', err.response?.data);
+      
       if (err.response?.status === 400) {
-        setError('유효하지 않은 토큰이거나 만료된 링크입니다.');
+        setError('유효하지 않은 토큰이거나 만료된 링크입니다. 새로운 링크를 요청해주세요.');
       } else if (err.response?.status === 422) {
         setError('비밀번호 형식이 올바르지 않습니다.');
+      } else if (err.response?.status === 404) {
+        setError('토큰을 찾을 수 없습니다. 링크가 만료되었거나 잘못되었습니다.');
       } else {
-        setError('비밀번호 재설정 중 오류가 발생했습니다.');
+        setError(`비밀번호 재설정 중 오류가 발생했습니다. (${err.response?.status || '네트워크 오류'})`);
       }
     } finally {
       setIsLoading(false);
