@@ -8,9 +8,10 @@ import ChatContainer from '../../components/chat/ChatContainer';
 import QuickQuestions from '../../components/chat/QuickQuestions';
 import { useChatMessages } from '../../hooks/useChatMessages';
 import { useCategoryData } from '../../hooks/useCategoryData';
+import { getConversationDetails } from '../../api/chat';
 
 function ChatPage() {
-  const { category } = useParams();
+  const { category, chatId } = useParams();
   const navigate = useNavigate();
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
@@ -20,6 +21,63 @@ function ChatPage() {
   
   const { messages, setMessages, isLoading, sendMessage, clearMessages } = useChatMessages();
   const { categories, getCategoryById, getCategoryByName, getCategoryQuestions, getQuestionDetail } = useCategoryData();
+
+  // 새 대화 시작
+  const handleNewChat = () => {
+    console.log('새 대화 시작');
+    clearMessages();
+    navigate('/dashboard');
+  };
+
+  // 대화 선택 핸들러
+  const handleSelectChat = async (chatId) => {
+    try {
+      console.log('대화 선택:', chatId);
+      
+      // 대화 상세 조회
+      const conversationDetails = await getConversationDetails(chatId);
+      console.log('대화 상세 데이터:', conversationDetails);
+      
+      // 메시지 데이터 변환
+      if (conversationDetails.messages && Array.isArray(conversationDetails.messages)) {
+        const formattedMessages = conversationDetails.messages.map(msg => ({
+          id: msg.id || msg.message_id,
+          text: msg.content || msg.message,
+          sender: msg.sender || (msg.role === 'user' ? 'user' : 'ai'),
+          timestamp: new Date(msg.created_at || msg.timestamp).toLocaleTimeString(),
+          suggestions: msg.suggestions || null,
+          conversation_id: chatId
+        }));
+        
+        setMessages(formattedMessages);
+        console.log('대화 메시지 로드 완료:', formattedMessages.length, '개');
+      }
+      
+      // URL 업데이트 (선택사항)
+      navigate(`/chat/history/${chatId}`);
+      
+    } catch (error) {
+      console.error('대화 로드 실패:', error);
+      
+      // 에러 메시지 표시
+      const errorMessage = {
+        id: Date.now(),
+        text: '대화를 불러오는데 실패했습니다. 다시 시도해주세요.',
+        sender: 'ai',
+        timestamp: new Date().toLocaleTimeString()
+      };
+      
+      setMessages([errorMessage]);
+    }
+  };
+
+  // URL에서 chatId가 있으면 자동으로 대화 로드
+  useEffect(() => {
+    if (chatId) {
+      console.log('URL에서 대화 ID 감지:', chatId);
+      handleSelectChat(chatId);
+    }
+  }, [chatId]);
 
   // 로그인 상태 확인
   useEffect(() => {
@@ -352,9 +410,9 @@ function ChatPage() {
         <LeftSidebar 
           isOpen={isLeftSidebarOpen} 
           onToggle={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
-          onNewChat={() => navigate('/dashboard')}
+          onNewChat={handleNewChat}
           onSelectChat={handleSelectChat}
-          selectedChatId={null}
+          selectedChatId={chatId}
         />
         
         <div className="flex-1">

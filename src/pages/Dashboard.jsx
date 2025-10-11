@@ -7,6 +7,7 @@ import FaqPopup from '../components/FaqPopup';
 import CategoryGrid from '../components/category/CategoryGrid';
 import MessageInput from '../components/chat/MessageInput';
 import { useCategoryData } from '../hooks/useCategoryData';
+import { getConversationDetails } from '../api/chat';
 
 function DashboardSimple() {
   const navigate = useNavigate();
@@ -17,6 +18,22 @@ function DashboardSimple() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   
   const { categories } = useCategoryData();
+
+  // 대화 선택 핸들러
+  const handleSelectChat = async (chatId) => {
+    try {
+      console.log('대화 선택:', chatId);
+      navigate(`/chat/history/${chatId}`);
+    } catch (error) {
+      console.error('대화 로드 실패:', error);
+    }
+  };
+
+  // 새 대화 시작
+  const handleNewChat = () => {
+    console.log('새 대화 시작');
+    navigate('/dashboard');
+  };
 
   // 로그인 상태 확인
   useEffect(() => {
@@ -83,7 +100,7 @@ function DashboardSimple() {
         <LeftSidebar 
           isOpen={isLeftSidebarOpen} 
           onToggle={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
-          onNewChat={() => navigate('/dashboard')}
+          onNewChat={handleNewChat}
           onSelectChat={handleSelectChat}
           selectedChatId={null}
         />
