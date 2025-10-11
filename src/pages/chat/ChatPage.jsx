@@ -57,16 +57,22 @@ function ChatPage() {
   const loadCategoryMessages = async (categoryParam) => {
     clearMessages();
     
+    // URL 디코딩 처리 (예: "2025%20고시%20변경" -> "2025 고시 변경")
+    const decodedParam = decodeURIComponent(categoryParam);
+    
     // URL 파라미터가 카테고리 ID인지 이름인지 확인
-    const categoryId = parseInt(categoryParam);
-    const isNumeric = !isNaN(categoryId);
+    // 전체 문자열이 숫자인지 체크 (예: "2025 고시 변경"은 숫자가 아님)
+    const categoryId = parseInt(decodedParam);
+    const isNumeric = !isNaN(categoryId) && decodedParam.toString().trim() === categoryId.toString();
     
     console.log('=== 카테고리 파라미터 분석 ===');
     console.log('받은 카테고리 파라미터:', categoryParam);
+    console.log('디코딩된 파라미터:', decodedParam);
     console.log('파싱된 카테고리 ID:', categoryId);
     console.log('숫자인가?', isNumeric);
+    console.log('전체가 숫자인가?', decodedParam.toString().trim() === categoryId.toString());
     
-    let categoryName = categoryParam;
+    let categoryName = decodedParam;
     let finalCategoryId = categoryId;
     
     // 카테고리 이름을 ID로 매핑 (직접 매핑)
@@ -81,20 +87,20 @@ function ChatPage() {
     
     // 숫자가 아니라면 카테고리 이름에서 ID 찾기
     if (!isNumeric) {
-      categoryName = categoryParam;
-      finalCategoryId = categoryNameToIdMap[categoryParam];
+      categoryName = decodedParam;
+      finalCategoryId = categoryNameToIdMap[decodedParam];
       console.log('카테고리 이름으로 찾은 ID (직접 매핑):', finalCategoryId);
       
       // 직접 매핑으로 찾지 못한 경우 기존 함수 사용
       if (!finalCategoryId) {
-        const categoryData = getCategoryByName(categoryParam);
+        const categoryData = getCategoryByName(decodedParam);
         finalCategoryId = categoryData?.id;
         console.log('카테고리 이름으로 찾은 ID (함수):', finalCategoryId);
       }
     } else {
       // 숫자라면 카테고리 ID로 이름 찾기
       const categoryData = getCategoryById(categoryId);
-      categoryName = categoryData?.name || categoryParam;
+      categoryName = categoryData?.name || decodedParam;
       finalCategoryId = categoryId;
       console.log('카테고리 ID로 찾은 이름:', categoryName);
     }
@@ -221,6 +227,23 @@ function ChatPage() {
          console.log('질문 ID 추출:', questionId);
          console.log('질문 ID 타입:', typeof questionId);
          
+         // 로그인 상태 확인
+         const token = localStorage.getItem('access_token') || localStorage.getItem('token');
+         console.log('로그인 토큰 확인:', token ? '있음' : '없음');
+         
+         if (!token) {
+           // 로그인하지 않은 경우 안내 메시지
+           console.log('로그인이 필요합니다.');
+           const loginRequiredMessage = {
+             id: Date.now() + 1,
+             text: '🔐 질문의 상세 답변을 보시려면 로그인이 필요합니다.\n\n로그인 후 이용해주세요!',
+             sender: 'ai',
+             timestamp: new Date().toLocaleTimeString()
+           };
+           setMessages(prev => [...prev, loginRequiredMessage]);
+           return;
+         }
+         
          // 질문 상세 조회 API 호출
          console.log('질문 상세 조회 API 호출 시작...');
          const questionDetail = await getQuestionDetail(questionId);
@@ -231,8 +254,8 @@ function ChatPage() {
            // API 응답 형식에 맞춰 답변 구성
            const botResponse = {
              greeting: questionDetail.answer || '답변을 찾을 수 없습니다.',
-             summary: questionDetail.reference_title || '',
-             explanation: questionDetail.reference_url || '',
+             summary: '', // 요약 정보가 별도로 있다면 사용
+             explanation: '', // 상세 설명이 별도로 있다면 사용
              references: questionDetail.reference_url ? [{
                title: questionDetail.reference_title || '관련 문서',
                url: questionDetail.reference_url
@@ -248,9 +271,15 @@ function ChatPage() {
 
            setMessages(prev => [...prev, botMessage]);
          } else {
-           // 질문 상세 조회 실패 시 일반 채팅으로 처리
-           console.log('질문 상세 조회 실패, 일반 채팅으로 처리');
-           await sendMessage(suggestion);
+           // 질문 상세 조회 실패 시 안내 메시지
+           console.log('질문 상세 조회 실패');
+           const errorMessage = {
+             id: Date.now() + 1,
+             text: '😥 죄송합니다. 답변을 불러오는데 실패했습니다.\n\n다시 시도해주시거나, 질문을 직접 입력해주세요.',
+             sender: 'ai',
+             timestamp: new Date().toLocaleTimeString()
+           };
+           setMessages(prev => [...prev, errorMessage]);
          }
        } else {
          // 질문 ID를 추출할 수 없는 경우 일반 채팅으로 처리
@@ -259,8 +288,26 @@ function ChatPage() {
        }
      } catch (error) {
        console.error('질문 처리 실패:', error);
-       // 오류 발생 시 일반 채팅으로 처리
-       await sendMessage(suggestion);
+       
+       // 401 에러인 경우 로그인 안내
+       if (error.response?.status === 401) {
+         const loginRequiredMessage = {
+           id: Date.now() + 1,
+           text: '🔐 질문의 상세 답변을 보시려면 로그인이 필요합니다.\n\n로그인 후 이용해주세요!',
+           sender: 'ai',
+           timestamp: new Date().toLocaleTimeString()
+         };
+         setMessages(prev => [...prev, loginRequiredMessage]);
+       } else {
+         // 다른 오류는 일반 채팅으로 처리
+         const errorMessage = {
+           id: Date.now() + 1,
+           text: '😥 죄송합니다. 일시적인 오류가 발생했습니다.\n\n질문을 다시 입력해주세요.',
+           sender: 'ai',
+           timestamp: new Date().toLocaleTimeString()
+         };
+         setMessages(prev => [...prev, errorMessage]);
+       }
      }
   };
 

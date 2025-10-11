@@ -31,6 +31,8 @@ export const getFaqQuestions = async (categoryId) => {
     console.log('FAQ 질문 목록 조회 API 호출 - 카테고리 ID:', categoryId);
     console.log('카테고리 ID 타입:', typeof categoryId);
     console.log('API 요청 URL:', `/faq/questions?category_id=${categoryId}`);
+    console.log('API Base URL:', instance.defaults.baseURL);
+    console.log('전체 요청 URL:', `${instance.defaults.baseURL}/faq/questions?category_id=${categoryId}`);
     
     const response = await instance.get('/faq/questions', {
       params: { category_id: categoryId },
@@ -40,6 +42,15 @@ export const getFaqQuestions = async (categoryId) => {
     return response.data || [];
   } catch (error) {
     console.error('FAQ 질문 목록 조회 실패:', error);
+    console.error('에러 상세 정보:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      url: error.config?.url,
+      method: error.config?.method,
+      headers: error.config?.headers
+    });
+    
     // 404 오류인 경우 빈 배열 반환
     if (error.response?.status === 404) {
       console.log('FAQ 질문 목록 API 엔드포인트를 찾을 수 없습니다. 빈 배열을 반환합니다.');
