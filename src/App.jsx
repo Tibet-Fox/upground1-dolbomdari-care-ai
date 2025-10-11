@@ -1,16 +1,16 @@
 // src/App.jsx
 import { Routes, Route } from 'react-router-dom';
-import Dashboard from './pages/Dashboard.jsx';
-import ChatPage from './pages/chat/ChatPage.jsx';
-import Login from './pages/Login.jsx';
-import Signup from './pages/Signup.jsx';
-import FindId from './pages/FindId.jsx';
-import FindPw from './pages/FindPw.jsx';
-import ResetPassword from './pages/ResetPassword.jsx';
-import SignupStep1 from './pages/signup/Step1.jsx';
-import SignupStep2 from './pages/signup/Step2.jsx';
-import SignupStep3 from './pages/signup/Step3.jsx';
-import MyPage from './pages/MyPage.jsx';
+import Dashboard from '/src/pages/Dashboard.jsx';
+import ChatPage from '/src/pages/chat/ChatPage.jsx';
+import Login from '/src/pages/Login.jsx';
+import Signup from '/src/pages/Signup.jsx';
+import FindId from '/src/pages/FindId.jsx';
+import FindPw from '/src/pages/FindPw.jsx';
+import ResetPassword from '/src/pages/ResetPassword.jsx';
+import SignupStep1 from '/src/pages/signup/Step1.jsx';
+import SignupStep2 from '/src/pages/signup/Step2.jsx';
+import SignupStep3 from '/src/pages/signup/Step3.jsx';
+import MyPage from '/src/pages/MyPage.jsx';
 
 function App() {
   return (
