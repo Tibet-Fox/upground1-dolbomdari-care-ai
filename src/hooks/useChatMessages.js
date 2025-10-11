@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { askAI } from '../api/chat';
+import { askChatbot } from '../api/chat';
 
 export const useChatMessages = () => {
   const [messages, setMessages] = useState([]);
@@ -19,39 +19,33 @@ export const useChatMessages = () => {
     setIsLoading(true);
 
     try {
-      const response = await askAI(text);
+      const response = await askChatbot(text);
       
-      console.log('AI 응답 데이터:', response);
+      console.log('챗봇 응답 데이터:', response);
       
-      // 새로운 JSON 응답 형식 처리: { message_id, content, sources }
+      // askChatbot API 응답 형식 처리: { bot_message, suggestions, conversation_id }
       let botMessageText;
-      let sources = [];
+      let suggestions = [];
       
-      if (response.content) {
-        // content 필드가 있으면 사용
-        botMessageText = response.content;
+      if (response.bot_message) {
+        botMessageText = response.bot_message;
       } else {
         botMessageText = "죄송합니다. 응답을 생성하는 중에 오류가 발생했습니다.";
       }
       
-      // sources 배열 처리
-      if (response.sources && Array.isArray(response.sources)) {
-        sources = response.sources.map(source => ({
-          title: source.metadata?.title || '관련 문서',
-          url: source.metadata?.source_url || source.metadata?.source || '#',
-          text: source.text || '',
-          score: source.score || 0,
-          confidence: source.confidence || 0
-        }));
+      // suggestions 배열 처리
+      if (response.suggestions && Array.isArray(response.suggestions)) {
+        suggestions = response.suggestions;
       }
       
       // AI 메시지 객체 구성
       const botMessage = {
-        id: response.message_id || Date.now() + 1,
+        id: Date.now() + 1,
         text: botMessageText,
         sender: 'ai',
         timestamp: new Date().toLocaleTimeString(),
-        sources: sources
+        suggestions: suggestions,
+        conversation_id: response.conversation_id
       };
 
       setMessages(prev => [...prev, botMessage]);
@@ -72,7 +66,7 @@ export const useChatMessages = () => {
           setTimeout(() => {
             window.location.href = "/";
           }, 3000);
-        } else if (error.message.includes('대화 접근 권한이 없습니다')) {
+        } else if (error.message.includes('대화 접근 권한이 없습니다') || error.message.includes('새 대화를 시작합니다')) {
           errorMessage = "대화 접근 권한이 없습니다. 새 대화를 시작합니다.";
           localStorage.removeItem('current_conversation_id');
         } else if (error.message.includes('네트워크 오류')) {
