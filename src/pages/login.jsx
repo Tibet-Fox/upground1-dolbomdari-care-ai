@@ -164,9 +164,9 @@ function Login() {
 
         {/* 하단 링크 */}
         <div className="flex justify-center text-sm text-gray-600 gap-4">
-          <Link to="/findId" className="hover:text-blue-600 hover:underline transition-colors">이메일 찾기</Link>
+          <Link to="/find-id" className="hover:text-blue-600 hover:underline transition-colors">이메일 찾기</Link>
           <span className="text-gray-400">|</span>
-          <Link to="/findPw" className="hover:text-blue-600 hover:underline transition-colors">비밀번호 찾기</Link>
+          <Link to="/find-pw" className="hover:text-blue-600 hover:underline transition-colors">비밀번호 찾기</Link>
           <span className="text-gray-400">|</span>
           <Link to="/signup/step1" className="hover:text-blue-600 hover:underline transition-colors">회원가입</Link>
         </div>

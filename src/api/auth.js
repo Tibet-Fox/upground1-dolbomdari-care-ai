@@ -90,6 +90,16 @@ export const logoutUser = async () => {
   }
 };
 
+// 이메일 찾기 API
+export const findEmail = async (name, phone) => {
+  try {
+    const response = await instance.post('/auth/find-email', { name, phone });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // 비밀번호 찾기 API
 export const findPassword = async (email) => {
   try {
