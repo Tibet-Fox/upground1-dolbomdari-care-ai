@@ -80,7 +80,6 @@ function MyPage() {
     setIsLeftSidebarOpen(!isLeftSidebarOpen);
   };
 
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -140,29 +139,9 @@ function MyPage() {
                 회원가입 시 입력하신 정보입니다.
               </p>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* 프로필 사진 */}
-                <div className="lg:col-span-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    프로필 사진
-                  </label>
-                  <div className="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                      등록
-                    </button>
-                    <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm">
-                      삭제
-                    </button>
-                  </div>
-                </div>
-
+              <div className="grid grid-cols-1 gap-8">
                 {/* 사용자 정보 표시 */}
-                <div className="lg:col-span-2">
+                <div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* 성명 */}
                     <div>
@@ -174,18 +153,8 @@ function MyPage() {
                       </div>
                     </div>
 
-                    {/* 생년월일 */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        생년월일
-                      </label>
-                      <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
-                        {formData.birthDate || '정보 없음'}
-                      </div>
-                    </div>
-
                     {/* 이메일 */}
-                    <div className="lg:col-span-2">
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         이메일
                       </label>
@@ -201,16 +170,6 @@ function MyPage() {
                       </label>
                       <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
                         {formData.phone || '정보 없음'}
-                      </div>
-                    </div>
-
-                    {/* 회원 ID */}
-                    <div className="lg:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        회원 ID
-                      </label>
-                      <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
-                        {userInfo?.worker_id || '정보 없음'}
                       </div>
                     </div>
                   </div>
