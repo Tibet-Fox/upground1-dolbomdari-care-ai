@@ -6,6 +6,9 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   base: '/',
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
