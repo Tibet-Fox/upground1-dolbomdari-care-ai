@@ -19,11 +19,10 @@ function MyPage() {
 
   // 사용자 정보 로드
   useEffect(() => {
-    const loadUserInfo = () => {
+    const loadUserInfo = async () => {
       try {
-        // localStorage의 모든 키 확인
+        // 1. localStorage에서 먼저 확인
         console.log('localStorage의 모든 키:', Object.keys(localStorage));
-        console.log('localStorage 전체 내용:', localStorage);
         
         const user = localStorage.getItem('user');
         console.log('localStorage에서 가져온 user 데이터:', user);
@@ -33,7 +32,7 @@ function MyPage() {
           console.log('파싱된 userData:', userData);
           setUserInfo(userData);
           
-          // 폼 데이터 설정 (회원가입 시 입력한 정보 사용)
+          // 폼 데이터 설정
           const email = userData.email || '';
           const [emailId, emailDomain] = email.split('@');
           
@@ -50,22 +49,49 @@ function MyPage() {
           console.log('설정할 폼 데이터:', newFormData);
           setFormData(newFormData);
         } else {
-          console.log('localStorage에 user 데이터가 없습니다.');
-          console.log('현재 localStorage 내용:', localStorage);
+          // 2. localStorage에 없으면 API에서 가져오기
+          console.log('localStorage에 user 데이터가 없습니다. API에서 가져옵니다.');
           
-          // 로그인은 했지만 사용자 정보가 없는 경우 (기본 정보로 폼 초기화)
           const token = localStorage.getItem('token') || localStorage.getItem('access_token');
           if (token) {
-            console.log('토큰은 있지만 사용자 정보가 없습니다. 기본 정보로 초기화합니다.');
-            setFormData({
-              name: '',
-              birthDate: '',
-              emailId: '',
-              emailDomain: '',
-              phone: '',
-              password: '',
-              confirmPassword: ''
-            });
+            try {
+              const { getUserInfo } = await import('../api/auth');
+              const apiUserData = await getUserInfo();
+              console.log('API에서 가져온 사용자 정보:', apiUserData);
+              
+              // localStorage에 저장
+              localStorage.setItem('user', JSON.stringify(apiUserData));
+              
+              setUserInfo(apiUserData);
+              
+              // 폼 데이터 설정
+              const email = apiUserData.email || '';
+              const [emailId, emailDomain] = email.split('@');
+              
+              const newFormData = {
+                name: apiUserData.name || '',
+                birthDate: apiUserData.birthDate || '',
+                emailId: emailId || '',
+                emailDomain: emailDomain || '',
+                phone: apiUserData.phone || '',
+                password: '',
+                confirmPassword: ''
+              };
+              
+              setFormData(newFormData);
+            } catch (apiError) {
+              console.error('API에서 사용자 정보 가져오기 실패:', apiError);
+              // API 실패 시 빈 폼으로 초기화
+              setFormData({
+                name: '',
+                birthDate: '',
+                emailId: '',
+                emailDomain: '',
+                phone: '',
+                password: '',
+                confirmPassword: ''
+              });
+            }
           }
         }
       } catch (error) {

@@ -29,33 +29,43 @@ function Login() {
       console.log('응답에 사용자 정보가 있는지 확인:', response.user);
       
       // 로그인 성공 시 localStorage에 토큰과 사용자 정보 저장
-      if (response.token) {
+      if (response.token || response.access_token) {
+        const token = response.token || response.access_token;
         // access_token과 token 모두 저장 (하위 호환성)
-        localStorage.setItem('access_token', response.token);
-        localStorage.setItem('token', response.token);
+        localStorage.setItem('access_token', token);
+        localStorage.setItem('token', token);
         
         // 리프레시 토큰이 있다면 저장
         if (response.refresh_token) {
           localStorage.setItem('refresh_token', response.refresh_token);
         }
         
-        // 사용자 정보 저장 (응답에 사용자 정보가 있으면 사용, 없으면 기본 정보로 생성)
-        const userInfo = response.user || {
-          email: email,
-          name: '', // 로그인 시에는 이름 정보가 없을 수 있음
-          phone: '',
-          worker_id: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        
-        console.log('로그인 시 저장할 사용자 정보:', userInfo);
-        localStorage.setItem('user', JSON.stringify(userInfo));
+        // 사용자 정보 가져오기
+        try {
+          const { getUserInfo } = await import('../api/auth');
+          const userInfo = await getUserInfo();
+          console.log('API에서 가져온 사용자 정보:', userInfo);
+          localStorage.setItem('user', JSON.stringify(userInfo));
+        } catch (userInfoError) {
+          console.error('사용자 정보 가져오기 실패, 기본 정보 사용:', userInfoError);
+          
+          // API 실패 시 응답의 사용자 정보 또는 기본 정보 사용
+          const userInfo = response.user || {
+            email: email,
+            name: '',
+            phone: '',
+            worker_id: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+          
+          console.log('기본 사용자 정보 저장:', userInfo);
+          localStorage.setItem('user', JSON.stringify(userInfo));
+        }
         
         console.log('토큰 저장 완료:', {
-          access_token: !!response.token,
-          refresh_token: !!response.refresh_token,
-          user: !!response.user
+          access_token: !!token,
+          refresh_token: !!response.refresh_token
         });
         
         // 로그인 상태 변경 이벤트 발생
