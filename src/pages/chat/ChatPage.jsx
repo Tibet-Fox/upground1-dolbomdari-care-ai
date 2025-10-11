@@ -118,6 +118,27 @@ function ChatPage() {
     // URL 디코딩 처리 (예: "2025%20고시%20변경" -> "2025 고시 변경")
     const decodedParam = decodeURIComponent(categoryParam);
     
+    // "general" 특별 처리 - 일반 채팅 모드
+    if (decodedParam === 'general') {
+      console.log('=== 일반 채팅 모드 ===');
+      const userMessage = {
+        id: Date.now(),
+        text: '일반 채팅을 시작합니다',
+        sender: 'user',
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      const botMessage = {
+        id: Date.now() + 1,
+        text: '안녕하세요! 돌봄다리 AI입니다. 무엇을 도와드릴까요? 자유롭게 질문해주세요! 😊',
+        sender: 'ai',
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      setMessages([userMessage, botMessage]);
+      return;
+    }
+    
     // URL 파라미터가 카테고리 ID인지 이름인지 확인
     // 전체 문자열이 숫자인지 체크 (예: "2025 고시 변경"은 숫자가 아님)
     const categoryId = parseInt(decodedParam);
@@ -388,19 +409,6 @@ function ChatPage() {
     }
   };
 
-  const handleSelectChat = async (chatId) => {
-    try {
-      console.log('채팅 선택:', chatId);
-      const { getConversationDetails } = await import('../../api/chat');
-      const response = await getConversationDetails(chatId);
-      
-      const loadedMessages = response.messages || response.data?.messages || [];
-      setMessages(loadedMessages);
-    } catch (error) {
-      console.error('채팅 로드 실패:', error);
-      setMessages([]);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

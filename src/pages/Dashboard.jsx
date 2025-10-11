@@ -19,16 +19,6 @@ function DashboardSimple() {
   
   const { categories } = useCategoryData();
 
-  // 대화 선택 핸들러
-  const handleSelectChat = async (chatId) => {
-    try {
-      console.log('대화 선택:', chatId);
-      navigate(`/chat/history/${chatId}`);
-    } catch (error) {
-      console.error('대화 로드 실패:', error);
-    }
-  };
-
   // 새 대화 시작
   const handleNewChat = () => {
     console.log('새 대화 시작');
@@ -82,13 +72,13 @@ function DashboardSimple() {
     navigate('/chat/general', { state: { initialMessage: text } });
   };
 
+  // 대화 선택 핸들러
   const handleSelectChat = async (chatId) => {
     try {
-      console.log('채팅 선택:', chatId);
-      // 채팅 선택 시 ChatPage로 이동
+      console.log('대화 선택:', chatId);
       navigate(`/chat/history/${chatId}`);
     } catch (error) {
-      console.error('채팅 로드 실패:', error);
+      console.error('대화 로드 실패:', error);
     }
   };
 
