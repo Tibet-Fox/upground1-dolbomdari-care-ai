@@ -105,7 +105,7 @@ export const findEmail = async (name, phone) => {
   }
 };
 
-// 비밀번호 찾기 API
+// 비밀번호 찾기 API (이메일로 재설정 링크 전송)
 export const findPassword = async (email) => {
   try {
     const response = await instance.post('/auth/forgot-password', { email });

@@ -148,7 +148,7 @@ function FindPw() {
                   </p>
                   <p className="flex items-start gap-2">
                     <span className="text-blue-600 mt-1">⏰</span>
-                    <span>링크는 발송 후 24시간 동안 유효합니다.</span>
+                    <span>링크는 발송 후 30분 동안 유효합니다.</span>
                   </p>
                 </div>
               </div>
