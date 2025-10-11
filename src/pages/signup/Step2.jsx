@@ -7,6 +7,7 @@ function Step2() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
+    institutionName: '',
     emailId: '',
     emailDomain: '',
     password: '',
@@ -57,6 +58,7 @@ function Step2() {
       // 회원가입 API 호출
       const userData = {
         name: formData.name,
+        institution_name: formData.institutionName,
         email: email,
         password: formData.password,
         phone: formData.phone,
@@ -72,6 +74,7 @@ function Step2() {
       // 회원가입 성공 시 사용자 정보를 localStorage에 저장
       const userInfo = {
         name: formData.name,
+        institution_name: formData.institutionName,
         email: email,
         phone: formData.phone,
         worker_id: response.worker_id || null,
@@ -95,6 +98,7 @@ function Step2() {
       // API 실패해도 사용자 정보는 저장 (개발용)
       const userInfo = {
         name: formData.name,
+        institution_name: formData.institutionName,
         email: email,
         phone: formData.phone,
         worker_id: null,
@@ -202,6 +206,20 @@ function Step2() {
                   성명은 꼭 실명으로 입력해 주시기 바랍니다.
                 </div>
               </div>
+            </div>
+
+            {/* 기관명 입력 */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                기관명
+              </label>
+              <input
+                type="text"
+                value={formData.institutionName}
+                onChange={(e) => handleInputChange('institutionName', e.target.value)}
+                placeholder="기관명을 입력해주세요 (선택사항)"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
 
             {/* 이메일 입력 */}

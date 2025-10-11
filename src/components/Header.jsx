@@ -61,17 +61,6 @@ function Header() {
       
       {/* 네비게이션 링크 */}
       <div className="flex items-center gap-6">
-        <a href="#" className="text-gray-600 hover:text-gray-800 transition-colors flex items-center gap-1">
-          <span>💬</span>
-          채팅
-        </a>
-        <a href="#" className="text-gray-600 hover:text-gray-800 transition-colors flex items-center gap-1 relative">
-          <span>🔔</span>
-          내 알림
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-            32
-          </span>
-        </a>
         <button 
           onClick={() => navigate('/mypage')}
           className="text-gray-600 hover:text-gray-800 transition-colors flex items-center gap-1 bg-transparent border-none cursor-pointer"

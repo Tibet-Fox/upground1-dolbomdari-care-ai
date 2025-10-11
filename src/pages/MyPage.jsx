@@ -179,8 +179,18 @@ function MyPage() {
                       </div>
                     </div>
 
-                    {/* 이메일 */}
+                    {/* 기관명 */}
                     <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        기관명
+                      </label>
+                      <div className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800">
+                        {userInfo?.institution_name || '정보 없음'}
+                      </div>
+                    </div>
+
+                    {/* 이메일 */}
+                    <div className="lg:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         이메일
                       </label>
