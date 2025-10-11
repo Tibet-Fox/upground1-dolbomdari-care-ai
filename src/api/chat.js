@@ -310,23 +310,15 @@ export const askChatbot = async (userMessage) => {
     const response = await sendMessageWithAI(conversationId, userMessage);
     console.log('AI 응답 수신:', response);
     
-    // 3. 응답 데이터 구조화 (API 명세서에 따른 필드명 사용)
+    // 3. API 응답을 그대로 반환 (형식: { message_id, content, sources })
     console.log('원본 응답 데이터:', response);
     
-    // 응답에서 content 필드 추출
-    const botMessage = response.content || response.bot_message || response.ai_message || response.message || response.data?.message || response.data?.content;
+    // conversation_id 추가 (없을 경우)
+    if (!response.conversation_id) {
+      response.conversation_id = conversationId;
+    }
     
-    console.log('추출된 bot_message:', botMessage);
-    
-    const responseData = {
-      bot_message: botMessage || "응답을 받지 못했습니다.",
-      suggestions: response.suggestions || response.data?.suggestions || null,
-      conversation_id: response.conversation_id || response.data?.conversation_id || conversationId
-    };
-    
-    console.log('구조화된 응답 데이터:', responseData);
-    
-    return responseData;
+    return response;
   } catch (error) {
     console.error('챗봇 API 오류:', error.response?.data || error.message);
     

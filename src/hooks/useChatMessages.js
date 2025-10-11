@@ -23,14 +23,41 @@ export const useChatMessages = () => {
       
       console.log('챗봇 응답 데이터:', response);
       
-      // askChatbot API 응답 형식 처리: { bot_message, suggestions, conversation_id }
+      // API 응답 형식: { message_id, content, sources }
       let botMessageText;
       let suggestions = [];
+      let sources = null;
       
-      if (response.bot_message) {
+      // content 필드에서 텍스트 추출 (우선순위: content > answer > bot_message)
+      if (response.content) {
+        botMessageText = response.content;
+      } else if (response.answer) {
+        botMessageText = response.answer;
+      } else if (response.bot_message) {
         botMessageText = response.bot_message;
       } else {
         botMessageText = "죄송합니다. 응답을 생성하는 중에 오류가 발생했습니다.";
+      }
+      
+      // sources 배열 처리 (API 명세서 형식)
+      if (response.sources && Array.isArray(response.sources)) {
+        sources = response.sources.map(source => ({
+          text: source.text || '',
+          score: source.score,
+          confidence: source.confidence,
+          metadata: source.metadata || {},
+          title: source.metadata?.title || '관련 문서',
+          url: source.metadata?.source_url || null,
+          page: source.metadata?.page
+        }));
+      }
+      // 이전 형식 호환 (link 필드)
+      else if (response.link) {
+        sources = [{
+          title: response.link.title || '관련 문서',
+          url: response.link.url || response.link,
+          text: response.link.text || response.link.description || ''
+        }];
       }
       
       // suggestions 배열 처리
@@ -44,8 +71,10 @@ export const useChatMessages = () => {
         text: botMessageText,
         sender: 'ai',
         timestamp: new Date().toLocaleTimeString(),
+        message_id: response.message_id,
         suggestions: suggestions,
-        conversation_id: response.conversation_id
+        conversation_id: response.conversation_id,
+        sources: sources
       };
 
       setMessages(prev => [...prev, botMessage]);

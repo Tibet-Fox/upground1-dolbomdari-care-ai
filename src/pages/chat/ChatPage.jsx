@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../components/Header';
 import LeftSidebar from '../../components/LeftSidebar';
 import RightSidebar from '../../components/RightSidebar';
@@ -13,6 +13,7 @@ import { getConversationDetails } from '../../api/chat';
 function ChatPage() {
   const { category, chatId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isFaqPopupOpen, setIsFaqPopupOpen] = useState(false);
@@ -121,21 +122,28 @@ function ChatPage() {
     // "general" 특별 처리 - 일반 채팅 모드
     if (decodedParam === 'general') {
       console.log('=== 일반 채팅 모드 ===');
-      const userMessage = {
-        id: Date.now(),
-        text: '일반 채팅을 시작합니다',
-        sender: 'user',
-        timestamp: new Date().toLocaleTimeString()
-      };
+      
+      // Dashboard에서 전달받은 초기 메시지가 있는지 확인
+      const initialMessage = location.state?.initialMessage;
+      console.log('초기 메시지:', initialMessage);
+      
+      if (initialMessage && initialMessage.trim()) {
+        // 초기 메시지가 있으면 바로 AI에게 전송
+        console.log('초기 메시지로 AI 질문 전송:', initialMessage);
+        sendMessage(initialMessage);
+        // state 초기화 (뒤로가기 시 다시 전송되지 않도록)
+        window.history.replaceState({}, document.title);
+      } else {
+        // 초기 메시지가 없으면 환영 메시지만 표시
+        const botMessage = {
+          id: Date.now(),
+          text: '안녕하세요! 돌봄다리 AI입니다. 무엇을 도와드릴까요? 자유롭게 질문해주세요! 😊',
+          sender: 'ai',
+          timestamp: new Date().toLocaleTimeString()
+        };
 
-      const botMessage = {
-        id: Date.now() + 1,
-        text: '안녕하세요! 돌봄다리 AI입니다. 무엇을 도와드릴까요? 자유롭게 질문해주세요! 😊',
-        sender: 'ai',
-        timestamp: new Date().toLocaleTimeString()
-      };
-
-      setMessages([userMessage, botMessage]);
+        setMessages([botMessage]);
+      }
       return;
     }
     
